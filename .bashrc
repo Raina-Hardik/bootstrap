@@ -10,6 +10,14 @@ export TERM=xterm-256color
 
 export PATH="$HOME/.bin:$PATH"
 
+# Rust / Cargo (fast, idempotent)
+if [ -d "$HOME/.cargo/bin" ]; then
+  case ":$PATH:" in
+    *":$HOME/.cargo/bin:"*) ;;
+    *) export PATH="$HOME/.cargo/bin:$PATH" ;;
+  esac
+fi
+
 export EDITOR=nvim
 export VISUAL=nvim
 
