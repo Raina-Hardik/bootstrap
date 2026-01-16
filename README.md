@@ -20,8 +20,8 @@ This repository contains a minimal configuration set for quickly setting up cons
 ## Quick Start
 
 ```bash
-git clone https://github.com/Raina-Hardik/basic-ssh-config.git ~/.config
-cd ~/.config
+git clone https://github.com/Raina-Hardik/basic-ssh-config.git
+cd basic-ssh-config
 make install
 source ~/.bashrc
 ```
