@@ -42,8 +42,7 @@ help:
 	@echo "  make bashrc   - Symlink .bashrc to home directory"
 	@echo "  make clean    - Remove build artifacts"
 
-install: dirs tools uv-tools nvim bashrc
-install: dirs tools uv-tools nvim bashrc
+install: dirs tools bashrc uv-tools nvim
 	@echo "Setup complete. Run 'source ~/.bashrc' to reload."
 
 dirs:
