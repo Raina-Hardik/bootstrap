@@ -18,6 +18,15 @@ if [ -d "$HOME/.cargo/bin" ]; then
   esac
 fi
 
+# Go
+if [ -d "$HOME/.local/go/bin" ]; then
+  export PATH="$HOME/.local/go/bin:$PATH"
+fi
+
+# Go workspace (optional, recommended)
+export GOPATH="$HOME/.local/gopath"
+export PATH="$GOPATH/bin:$PATH"
+
 export EDITOR=nvim
 export VISUAL=nvim
 
