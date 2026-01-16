@@ -37,7 +37,7 @@ GO_TAR := go$(GO_VER).$(GO_OS)-$(GO_ARCH).tar.gz
 GO_URL := https://go.dev/dl/$(GO_TAR)
 GO_DIR := $(HOME)/.local/go
 
-.PHONY: all help install tools nvim bashrc dirs clean uv-tools go rust bat-config
+.PHONY: all help install tools nvim bashrc dirs clean uv-tools go rust bat-config lazydocker
 
 all: help
 
@@ -48,9 +48,10 @@ help:
 	@echo "  make nvim       - Install Neovim + LazyVim + ML Config"
 	@echo "  make bashrc     - Symlink .bashrc to home directory"
 	@echo "  make bat-config - Install Catppuccin theme for bat"
+	@echo "  make lazydocker - Install lazydocker (requires Go)"
 	@echo "  make clean      - Remove build artifacts"
 
-install: dirs bashrc tools go rust uv-tools nvim bat-config
+install: dirs bashrc tools go rust uv-tools nvim bat-config lazydocker
 	@echo "Setup complete. Run 'source ~/.bashrc' to reload."
 
 dirs:
@@ -148,6 +149,18 @@ go:
 		curl -fsSL $(GO_URL) -o $(TMP_DIR)/$(GO_TAR); \
 		rm -rf $(GO_DIR); \
 		tar -C $(LOCAL_DIR) -xzf $(TMP_DIR)/$(GO_TAR); \
+	fi
+
+lazydocker:
+	@echo "==> Installing lazydocker..."
+	@if command -v go >/dev/null; then \
+		export GOPATH="$(HOME)/.local/gopath"; \
+		export PATH="$(GO_DIR)/bin:$$GOPATH/bin:$(PATH)"; \
+		go install github.com/jesseduffield/lazydocker@latest; \
+		mkdir -p $(BIN_DIR); \
+		ln -sf $$GOPATH/bin/lazydocker $(BIN_DIR)/lazydocker; \
+	else \
+		echo "Go is required to install lazydocker. Run 'make go' first."; \
 	fi
 
 

@@ -29,13 +29,14 @@ source ~/.bashrc
 ## Installation Targets
 
 ```bash
-make install   # Full installation (tools, go, rust, bashrc, uv-tools, nvim)
+make install   # Full installation (tools, go, rust, bashrc, uv-tools, nvim, lazydocker)
 make tools     # CLI utilities only (rg, fd, bat, fzf, duf, direnv, just)
 make nvim      # Neovim + LazyVim + ML config
 make bashrc    # Copy .bashrc to home directory
 make go        # Install Go toolchain
 make rust      # Install Rust toolchain (cargo)
 make uv-tools  # Install Python tools via uv (ruff, pyright, debugpy, black)
+make lazydocker # Install lazydocker (requires Go)
 ```
 
 ## Tools Installed
@@ -53,6 +54,7 @@ make uv-tools  # Install Python tools via uv (ruff, pyright, debugpy, black)
 - **Neovim** (v0.11.5) with LazyVim configuration
 - **Go** (v1.25.5) - Go programming language
 - **Rust** - Rust toolchain via rustup (cargo)
+- **lazydocker** - Lazy Docker UI (requires Go)
 - **uv** - Python package and tool installer
   - ruff (linter/formatter)
   - pyright (type checker)
