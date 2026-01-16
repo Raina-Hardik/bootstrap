@@ -27,8 +27,13 @@ fi
 export GOPATH="$HOME/.local/gopath"
 export PATH="$GOPATH/bin:$PATH"
 
+# Neovim as default editor
 export EDITOR=nvim
 export VISUAL=nvim
+
+# Bat config
+export BAT_THEME="Catppuccin Mocha"
+export MANPAGER="bat -plman"
 
 # ============================================================================
 #  History (large, persistent, useful)
