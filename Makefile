@@ -30,7 +30,7 @@ DUF_VER     := 0.8.1
 DIRENV_VER  := 2.35.0
 JUST_VER    := 1.39.0
 
-GO_VER := 1.22.1
+GO_VER := 1.25.5
 GO_OS := linux
 GO_ARCH := $(GOARCH)
 GO_TAR := go$(GO_VER).$(GO_OS)-$(GO_ARCH).tar.gz
@@ -146,8 +146,7 @@ go:
 		mkdir -p $(TMP_DIR); \
 		curl -fsSL $(GO_URL) -o $(TMP_DIR)/$(GO_TAR); \
 		rm -rf $(GO_DIR); \
-		tar -C $(HOME)/.local -xzf $(TMP_DIR)/$(GO_TAR); \
-		mv $(HOME)/.local/go $(GO_DIR); \
+		tar -C $(LOCAL_DIR) -xzf $(TMP_DIR)/$(GO_TAR); \
 	fi
 
 
