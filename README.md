@@ -29,19 +29,37 @@ source ~/.bashrc
 ## Installation Targets
 
 ```bash
-make install  # Full installation (tools, nvim, bashrc)
-make tools    # CLI utilities only (rg, fd, bat, fzf, etc.)
-make nvim     # Neovim + LazyVim + ML config
-make bashrc   # Symlink .bashrc to home directory
+make install   # Full installation (tools, go, rust, bashrc, uv-tools, nvim)
+make tools     # CLI utilities only (rg, fd, bat, fzf, duf, direnv, just)
+make nvim      # Neovim + LazyVim + ML config
+make bashrc    # Copy .bashrc to home directory
+make go        # Install Go toolchain
+make rust      # Install Rust toolchain (cargo)
+make uv-tools  # Install Python tools via uv (ruff, pyright, debugpy, black)
 ```
 
 ## Tools Installed
 
-- Neovim with LazyVim
-- ripgrep, fd, bat, fzf
-- duf, direnv, just
+### CLI Utilities
+- **ripgrep** (`rg`) - Fast grep alternative
+- **fd** - Fast find alternative
+- **bat** - Cat with syntax highlighting
+- **fzf** - Fuzzy finder
+- **duf** - Disk usage utility
+- **direnv** - Environment variable manager
+- **just** - Command runner
 
-All tools are installed to `~/.bin` without requiring sudo access.
+### Development Tools
+- **Neovim** (v0.11.5) with LazyVim configuration
+- **Go** (v1.25.5) - Go programming language
+- **Rust** - Rust toolchain via rustup (cargo)
+- **uv** - Python package and tool installer
+  - ruff (linter/formatter)
+  - pyright (type checker)
+  - debugpy (debugger)
+  - black (formatter)
+
+All tools are installed to `~/.bin` or `~/.local` without requiring sudo access.
 
 ## Architecture Support
 
