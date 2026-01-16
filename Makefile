@@ -37,19 +37,20 @@ GO_TAR := go$(GO_VER).$(GO_OS)-$(GO_ARCH).tar.gz
 GO_URL := https://go.dev/dl/$(GO_TAR)
 GO_DIR := $(HOME)/.local/go
 
-.PHONY: all help install tools nvim bashrc dirs clean uv-tools go rust
+.PHONY: all help install tools nvim bashrc dirs clean uv-tools go rust bat-config
 
 all: help
 
 help:
 	@echo "Available commands:"
-	@echo "  make install  - Full installation (tools, nvim, bashrc)"
-	@echo "  make tools    - Install CLI utilities (rg, fd, bat, etc.)"
-	@echo "  make nvim     - Install Neovim + LazyVim + ML Config"
-	@echo "  make bashrc   - Symlink .bashrc to home directory"
-	@echo "  make clean    - Remove build artifacts"
+	@echo "  make install    - Full installation (tools, nvim, bashrc, bat config)"
+	@echo "  make tools      - Install CLI utilities (rg, fd, bat, etc.)"
+	@echo "  make nvim       - Install Neovim + LazyVim + ML Config"
+	@echo "  make bashrc     - Symlink .bashrc to home directory"
+	@echo "  make bat-config - Install Catppuccin theme for bat"
+	@echo "  make clean      - Remove build artifacts"
 
-install: dirs tools go rust bashrc uv-tools nvim
+install: dirs bashrc tools go rust uv-tools nvim bat-config
 	@echo "Setup complete. Run 'source ~/.bashrc' to reload."
 
 dirs:
@@ -168,6 +169,18 @@ bashrc:
 		mv $(HOME)/.bashrc $(HOME)/.bashrc.bak; \
 	fi
 	cp $(CURDIR)/.bashrc $(HOME)/.bashrc
+
+# --- Bat Configuration (Catppuccin Theme) ---
+bat-config:
+	@echo "==> Configuring bat with Catppuccin theme..."
+	@mkdir -p $(CONF_DIR)/bat/themes
+	@curl -fsSL -o $(CONF_DIR)/bat/themes/Catppuccin\ Latte.tmTheme https://github.com/catppuccin/bat/raw/main/themes/Catppuccin%20Latte.tmTheme
+	@curl -fsSL -o $(CONF_DIR)/bat/themes/Catppuccin\ Frappe.tmTheme https://github.com/catppuccin/bat/raw/main/themes/Catppuccin%20Frappe.tmTheme
+	@curl -fsSL -o $(CONF_DIR)/bat/themes/Catppuccin\ Macchiato.tmTheme https://github.com/catppuccin/bat/raw/main/themes/Catppuccin%20Macchiato.tmTheme
+	@curl -fsSL -o $(CONF_DIR)/bat/themes/Catppuccin\ Mocha.tmTheme https://github.com/catppuccin/bat/raw/main/themes/Catppuccin%20Mocha.tmTheme
+	@bat cache --build
+	@grep -q "BAT_THEME" $(HOME)/.bashrc 2>/dev/null || echo 'export BAT_THEME="Catppuccin Mocha"' >> $(HOME)/.bashrc
+	@echo "bat themes installed and configured!"
 
 clean:
 	rm -rf $(TMP_DIR)
