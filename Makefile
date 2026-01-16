@@ -6,15 +6,7 @@ BIN_DIR   := $(HOME)/.bin
 LOCAL_DIR := $(HOME)/.local
 CONF_DIR  := $(HOME)/.config
 TMP_DIR   := /tmp/devtools.$(shell echo $$$$)
-
-# --- Versions ---
-NVIM_VER    := 0.11.5
-RG_VER      := 14.1.0
-FD_VER      := 10.2.0
-BAT_VER     := 0.25.0
-DUF_VER     := 0.8.1
-DIRENV_VER  := 2.35.0
-JUST_VER    := 1.39.0
+RUSTUP_INIT := https://sh.rustup.rs
 
 # --- Arch Detection ---
 UNAME_P := $(shell uname -m)
@@ -29,8 +21,23 @@ else
     GOARCH := amd64
 endif
 
-.PHONY: all help install tools nvim bashrc dirs clean uv-tools
-.PHONY: all help install tools nvim bashrc dirs clean uv-tools
+# --- Versions ---
+NVIM_VER    := 0.11.5
+RG_VER      := 14.1.0
+FD_VER      := 10.2.0
+BAT_VER     := 0.25.0
+DUF_VER     := 0.8.1
+DIRENV_VER  := 2.35.0
+JUST_VER    := 1.39.0
+
+GO_VER := 1.22.1
+GO_OS := linux
+GO_ARCH := $(GOARCH)
+GO_TAR := go$(GO_VER).$(GO_OS)-$(GO_ARCH).tar.gz
+GO_URL := https://go.dev/dl/$(GO_TAR)
+GO_DIR := $(HOME)/.local/go
+
+.PHONY: all help install tools nvim bashrc dirs clean uv-tools go rust
 
 all: help
 
@@ -42,7 +49,7 @@ help:
 	@echo "  make bashrc   - Symlink .bashrc to home directory"
 	@echo "  make clean    - Remove build artifacts"
 
-install: dirs tools bashrc uv-tools nvim
+install: dirs tools go rust bashrc uv-tools nvim
 	@echo "Setup complete. Run 'source ~/.bashrc' to reload."
 
 dirs:
@@ -122,6 +129,27 @@ $(BIN_DIR)/nvim:
 	tar -xzf *.tar.gz --strip-components=1 && \
 	cp -r * $(LOCAL_DIR)/nvim/
 	ln -sf $(LOCAL_DIR)/nvim/bin/nvim $(BIN_DIR)/nvim
+
+rust:
+	@if command -v cargo >/dev/null; then \
+		echo "Cargo already installed"; \
+	else \
+		echo "Installing Rust (cargo)"; \
+		curl --proto '=https' --tlsv1.2 -sSf $(RUSTUP_INIT) | sh -s -- -y; \
+	fi
+
+go:
+	@if command -v go >/dev/null; then \
+		echo "Go already installed"; \
+	else \
+		echo "Installing Go $(GO_VER)"; \
+		mkdir -p $(TMP_DIR); \
+		curl -fsSL $(GO_URL) -o $(TMP_DIR)/$(GO_TAR); \
+		rm -rf $(GO_DIR); \
+		tar -C $(HOME)/.local -xzf $(TMP_DIR)/$(GO_TAR); \
+		mv $(HOME)/.local/go $(GO_DIR); \
+	fi
+
 
 nvim-config:
 	@echo "==> Configuring LazyVim..."
