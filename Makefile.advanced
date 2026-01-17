@@ -34,7 +34,15 @@ sshm: $(BIN_DIR)/sshm
 
 $(BIN_DIR)/sshm:
 	@echo "==> Installing SSHM..."
-	curl -sSL https://github.com/Gu1llaum-3/sshm/raw/main/install/unix.sh | sh -s -- -b $(BIN_DIR)
+	@export GOPATH="$(HOME)/.local/gopath"; \
+	export PATH="$(GO_DIR)/bin:$$GOPATH/bin:$(PATH)"; \
+	if command -v go >/dev/null; then \
+		go install github.com/Gu1llaum-3/sshm@latest; \
+		ln -sf $$GOPATH/bin/sshm $(BIN_DIR)/sshm; \
+	else \
+		echo "Go is required. Install via: make -f Makefile.dev go"; \
+		exit 1; \
+	fi
 
 # --- Television - Fuzzy Finder ---
 television: $(BIN_DIR)/tv
