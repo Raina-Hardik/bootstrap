@@ -42,6 +42,7 @@ make lazydocker # Install lazydocker (requires Go)
 ## Tools Installed
 
 ### CLI Utilities
+
 - **ripgrep** (`rg`) - Fast grep alternative
 - **fd** - Fast find alternative
 - **bat** - Cat with syntax highlighting
@@ -51,6 +52,7 @@ make lazydocker # Install lazydocker (requires Go)
 - **just** - Command runner
 
 ### Development Tools
+
 - **Neovim** (v0.11.5) with LazyVim configuration
 - **Go** (v1.25.5) - Go programming language
 - **Rust** - Rust toolchain via rustup (cargo)
