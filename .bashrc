@@ -90,6 +90,19 @@ alias v='nvim'
 alias vi='nvim'
 alias vim='nvim'
 
+# System monitoring
+if command -v btop >/dev/null; then
+  alias top='btop'
+  alias htop='btop'
+fi
+
+# GitHub CLI shortcuts
+if command -v gh >/dev/null; then
+  alias ghpr='gh pr view --web'
+  alias ghprs='gh pr status'
+  alias ghcl='gh repo clone'
+fi
+
 # ============================================================================
 #  Navigation helpers
 # ============================================================================
@@ -141,6 +154,11 @@ export TMOUT=0
 
 [ -f "$HOME/.local/fzf/shell/key-bindings.bash" ] \
   && source "$HOME/.local/fzf/shell/key-bindings.bash"
+
+if command -v zoxide >/dev/null; then
+  eval "$(zoxide init bash)"
+  alias zd='z'  # Quick alias for zoxide
+fi
 
 # ============================================================================
 #  Misc helpers
