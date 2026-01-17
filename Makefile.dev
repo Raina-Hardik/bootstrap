@@ -79,14 +79,15 @@ go-tools: go
 
 lazydocker:
 	@echo "==> Installing lazydocker..."
-	@if command -v go >/dev/null; then \
-		export GOPATH="$(HOME)/.local/gopath"; \
-		export PATH="$(GO_DIR)/bin:$$GOPATH/bin:$(PATH)"; \
+	@export GOPATH="$(HOME)/.local/gopath"; \
+	export PATH="$(GO_DIR)/bin:$$GOPATH/bin:$(PATH)"; \
+	if command -v go >/dev/null; then \
 		go install github.com/jesseduffield/lazydocker@latest; \
 		mkdir -p $(BIN_DIR); \
 		ln -sf $$GOPATH/bin/lazydocker $(BIN_DIR)/lazydocker; \
 	else \
 		echo "Go is required to install lazydocker. Run 'make go' first."; \
+		exit 1; \
 	fi
 
 # --- Rust ---

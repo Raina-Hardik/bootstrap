@@ -115,7 +115,7 @@ $(BIN_DIR)/zoxide:
 $(BIN_DIR)/btop:
 	@echo "==> Installing btop..."
 	mkdir -p $(TMP_DIR)/btop && cd $(TMP_DIR)/btop && \
-	curl -fLO https://github.com/aristocratos/btop/releases/download/v$(BTOP_VER)/btop-$(ARCH)-linux-musl.tbz && \
+	curl -fLO https://github.com/aristocratos/btop/releases/download/v$(BTOP_VER)/btop-$(ARCH)-unknown-linux-musl.tbz && \
 	tar -xjf *.tbz && \
 	cp btop/bin/btop $(BIN_DIR)/ || cp bin/btop $(BIN_DIR)/ || true
 

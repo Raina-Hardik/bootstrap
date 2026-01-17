@@ -29,9 +29,9 @@ install-git: delta bat-config git-config
 
 # --- Delta (via Makefile.dev cargo-tools) ---
 delta:
-	@if command -v cargo >/dev/null; then \
+	@export PATH="$(HOME)/.cargo/bin:$(PATH)"; \
+	if command -v cargo >/dev/null; then \
 		echo "==> Installing delta..."; \
-		export PATH="$(HOME)/.cargo/bin:$(PATH)"; \
 		cargo install git-delta; \
 		ln -sf $(HOME)/.cargo/bin/delta $(BIN_DIR)/delta; \
 	else \
