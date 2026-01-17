@@ -110,12 +110,13 @@ uv-tools:
 	@echo "==> Installing uv..."
 	@command -v uv >/dev/null 2>&1 || curl -LsSf https://astral.sh/uv/install.sh | sh
 	@echo "==> Installing Python tools via uv..."
-	uv tool install ruff
-	uv tool install pyright
-	uv tool install debugpy
-	uv tool install black
-	uv tool install httpie
-	uv tool install twg
+	@export PATH="$(HOME)/.local/bin:$(PATH)"; \
+	uv tool install ruff && \
+	uv tool install pyright && \
+	uv tool install debugpy && \
+	uv tool install black && \
+	uv tool install httpie && \
+	uv tool install twg && \
 	uv tool update-shell
 
 # --- Uninstall Targets ---
