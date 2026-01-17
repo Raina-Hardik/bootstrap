@@ -1,0 +1,72 @@
+# ==============================================================================
+#  Git Tools and Configuration
+# ==============================================================================
+
+include Makefile.common
+
+.PHONY: all install-git delta git-config bat-config help uninstall-git
+
+all: install-git
+
+help:
+	@echo "======================================================================"
+	@echo "  Makefile.git - Git Tools and Configuration"
+	@echo "======================================================================"
+	@echo ""
+	@echo "Available targets:"
+	@echo "  make install-git     - Install git tools and configuration"
+	@echo "  make uninstall-git   - Uninstall git tools and revert configuration"
+	@echo ""
+	@echo "Individual components:"
+	@echo "  make delta           - Install delta (git diff viewer)"
+	@echo "  make bat-config      - Install bat Catppuccin themes"
+	@echo "  make git-config      - Configure git to use delta"
+	@echo ""
+	@echo "======================================================================"
+
+install-git: delta bat-config git-config
+	@echo "==> Git tools and configuration completed!"
+
+# --- Delta (via Makefile.dev cargo-tools) ---
+delta:
+	@if command -v cargo >/dev/null; then \
+		echo "==> Installing delta..."; \
+		export PATH="$(HOME)/.cargo/bin:$(PATH)"; \
+		cargo install git-delta; \
+		ln -sf $(HOME)/.cargo/bin/delta $(BIN_DIR)/delta; \
+	else \
+		echo "Rust/Cargo is required. Install via: make -f Makefile.dev rust"; \
+		exit 1; \
+	fi
+
+# --- Bat Configuration (Catppuccin Theme) ---
+bat-config:
+	@echo "==> Configuring bat with Catppuccin theme..."
+	@mkdir -p $(CONF_DIR)/bat/themes
+	@curl -fsSL -o $(CONF_DIR)/bat/themes/Catppuccin\ Latte.tmTheme https://github.com/catppuccin/bat/raw/main/themes/Catppuccin%20Latte.tmTheme
+	@curl -fsSL -o $(CONF_DIR)/bat/themes/Catppuccin\ Frappe.tmTheme https://github.com/catppuccin/bat/raw/main/themes/Catppuccin%20Frappe.tmTheme
+	@curl -fsSL -o $(CONF_DIR)/bat/themes/Catppuccin\ Macchiato.tmTheme https://github.com/catppuccin/bat/raw/main/themes/Catppuccin%20Macchiato.tmTheme
+	@curl -fsSL -o $(CONF_DIR)/bat/themes/Catppuccin\ Mocha.tmTheme https://github.com/catppuccin/bat/raw/main/themes/Catppuccin%20Mocha.tmTheme
+	@$(BIN_DIR)/bat cache --build || bat cache --build || true
+	@echo "bat themes installed!"
+
+# --- Git Configuration (Delta) ---
+git-config:
+	@echo "==> Configuring git to use delta..."
+	@git config --global core.pager delta
+	@git config --global interactive.diffFilter 'delta --color-only'
+	@git config --global delta.navigate true
+	@git config --global merge.conflictStyle zdiff3
+	@echo "Git configured with delta!"
+
+# --- Uninstall Targets ---
+
+uninstall-git:
+	@echo "==> Uninstalling git tools and reverting configuration..."
+	@rm -f $(BIN_DIR)/delta
+	@rm -rf $(CONF_DIR)/bat/themes/Catppuccin*.tmTheme
+	@git config --global --unset core.pager || true
+	@git config --global --unset interactive.diffFilter || true
+	@git config --global --unset delta.navigate || true
+	@git config --global --unset merge.conflictStyle || true
+	@echo "Git tools uninstalled and configuration reverted."

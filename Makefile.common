@@ -1,0 +1,74 @@
+# ==============================================================================
+#  Common Variables and Utilities for Modular Makefiles
+# ==============================================================================
+
+# --- Directory Setup ---
+BIN_DIR   := $(HOME)/.bin
+LOCAL_DIR := $(HOME)/.local
+CONF_DIR  := $(HOME)/.config
+TMP_DIR   := /tmp/devtools.$(shell echo $$$$)
+
+# --- Arch Detection ---
+UNAME_P := $(shell uname -m)
+ifeq ($(UNAME_P),x86_64)
+    ARCH := x86_64
+    GOARCH := amd64
+else ifneq ($(filter arm% aarch64,$(UNAME_P)),)
+    ARCH := aarch64
+    GOARCH := arm64
+else
+    ARCH := x86_64
+    GOARCH := amd64
+endif
+
+# --- Tool Versions ---
+NVIM_VER    := 0.11.5
+RG_VER      := 14.1.0
+FD_VER      := 10.2.0
+BAT_VER     := 0.25.0
+DUF_VER     := 0.8.1
+DIRENV_VER  := 2.35.0
+JUST_VER    := 1.39.0
+TMUX_VER    := 3.6a
+GH_VER      := 2.83.2
+JQ_VER      := 1.8.1
+STOW_VER    := 2.4.0
+ZOXIDE_VER  := 0.9.6
+BTOP_VER    := 1.4.0
+YQ_VER      := 4.45.1
+
+GO_VER := 1.25.5
+GO_OS := linux
+GO_ARCH := $(GOARCH)
+GO_TAR := go$(GO_VER).$(GO_OS)-$(GO_ARCH).tar.gz
+GO_URL := https://go.dev/dl/$(GO_TAR)
+GO_DIR := $(HOME)/.local/go
+
+RUSTUP_INIT := https://sh.rustup.rs
+
+# --- Common Targets ---
+.PHONY: dirs clean help
+
+help:
+	@echo "======================================================================"
+	@echo "  Makefile.common - Shared Variables and Utilities"
+	@echo "======================================================================"
+	@echo ""
+	@echo "This file provides common variables and targets for all makefiles:"
+	@echo "  - BIN_DIR:   $(BIN_DIR)"
+	@echo "  - LOCAL_DIR: $(LOCAL_DIR)"
+	@echo "  - CONF_DIR:  $(CONF_DIR)"
+	@echo "  - Architecture: $(ARCH) ($(GOARCH))"
+	@echo ""
+	@echo "Common targets:"
+	@echo "  make dirs    - Create directory structure"
+	@echo "  make clean   - Remove temporary build artifacts"
+	@echo ""
+	@echo "This file is included by all modular makefiles."
+	@echo "======================================================================"
+
+dirs:
+	mkdir -p $(BIN_DIR) $(LOCAL_DIR) $(CONF_DIR)
+
+clean:
+	rm -rf $(TMP_DIR)

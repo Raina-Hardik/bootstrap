@@ -1,0 +1,116 @@
+# ==============================================================================
+#  Advanced Terminal Tools
+# ==============================================================================
+
+include Makefile.common
+
+.PHONY: all install-advanced sshm television broot tabiew glow help uninstall-advanced
+
+all: install-advanced
+
+help:
+	@echo "======================================================================"
+	@echo "  Makefile.advanced - Advanced Terminal Tools"
+	@echo "======================================================================"
+	@echo ""
+	@echo "Available targets:"
+	@echo "  make install-advanced  - Install all advanced tools"
+	@echo "  make uninstall-advanced - Uninstall all advanced tools"
+	@echo ""
+	@echo "Individual tools:"
+	@echo "  make sshm              - SSH Manager with TUI"
+	@echo "  make television        - Fuzzy finder with channels"
+	@echo "  make broot             - Directory navigator"
+	@echo "  make tabiew            - Table viewer (CSV, JSON, etc.)"
+	@echo "  make glow              - Markdown viewer"
+	@echo ""
+	@echo "======================================================================"
+
+install-advanced: sshm television broot tabiew glow
+	@echo "==> Advanced tools installed successfully!"
+
+# --- SSHM - SSH Manager ---
+sshm: $(BIN_DIR)/sshm
+
+$(BIN_DIR)/sshm:
+	@echo "==> Installing SSHM..."
+	mkdir -p $(TMP_DIR)/sshm && cd $(TMP_DIR)/sshm && \
+	curl -fLO https://github.com/Gu1llaum-3/sshm/releases/latest/download/sshm-linux-amd64.tar.gz && \
+	tar -xzf *.tar.gz && \
+	cp sshm $(BIN_DIR)/
+
+# --- Television - Fuzzy Finder ---
+television: $(BIN_DIR)/tv
+
+$(BIN_DIR)/tv:
+	@echo "==> Installing Television..."
+	@if command -v cargo >/dev/null; then \
+		export PATH="$(HOME)/.cargo/bin:$(PATH)"; \
+		cargo install television; \
+		ln -sf $(HOME)/.cargo/bin/tv $(BIN_DIR)/tv; \
+	else \
+		echo "Rust/Cargo is required. Install via: make -f Makefile.dev rust"; \
+		exit 1; \
+	fi
+
+# --- Broot - Directory Navigator ---
+broot: $(BIN_DIR)/br
+
+$(BIN_DIR)/br:
+	@echo "==> Installing Broot..."
+	@if command -v cargo >/dev/null; then \
+		export PATH="$(HOME)/.cargo/bin:$(PATH)"; \
+		cargo install broot; \
+		ln -sf $(HOME)/.cargo/bin/broot $(BIN_DIR)/br; \
+	else \
+		echo "Rust/Cargo is required. Install via: make -f Makefile.dev rust"; \
+		exit 1; \
+	fi
+
+# --- Tabiew - Table Viewer ---
+tabiew: $(BIN_DIR)/tw
+
+$(BIN_DIR)/tw:
+	@echo "==> Installing Tabiew..."
+	@if command -v cargo >/dev/null; then \
+		export PATH="$(HOME)/.cargo/bin:$(PATH)"; \
+		cargo install --locked tabiew; \
+		ln -sf $(HOME)/.cargo/bin/tw $(BIN_DIR)/tw; \
+	else \
+		echo "Rust/Cargo is required. Install via: make -f Makefile.dev rust"; \
+		exit 1; \
+	fi
+
+# --- Glow - Markdown Viewer ---
+glow: $(BIN_DIR)/glow
+
+$(BIN_DIR)/glow:
+	@echo "==> Installing Glow..."
+	@if command -v go >/dev/null; then \
+		export GOPATH="$(HOME)/.local/gopath"; \
+		export PATH="$(GO_DIR)/bin:$$GOPATH/bin:$(PATH)"; \
+		go install github.com/charmbracelet/glow@latest; \
+		ln -sf $$GOPATH/bin/glow $(BIN_DIR)/glow; \
+	else \
+		echo "Go is required. Install via: make -f Makefile.dev go"; \
+		exit 1; \
+	fi
+# --- Uninstall Targets ---
+
+uninstall-advanced:
+	@echo "==> Uninstalling advanced tools..."
+	@rm -f $(BIN_DIR)/sshm
+	@rm -f $(BIN_DIR)/tv
+	@if command -v cargo >/dev/null 2>&1; then \
+		cargo uninstall television 2>/dev/null || true; \
+	fi
+	@rm -f $(BIN_DIR)/br
+	@if command -v cargo >/dev/null 2>&1; then \
+		cargo uninstall broot 2>/dev/null || true; \
+	fi
+	@rm -f $(BIN_DIR)/tw
+	@if command -v cargo >/dev/null 2>&1; then \
+		cargo uninstall tabiew 2>/dev/null || true; \
+	fi
+	@rm -f $(BIN_DIR)/glow
+	@echo "Advanced tools uninstalled."

@@ -1,199 +1,159 @@
 # ==============================================================================
-#  Environment Setup Makefile (No-Sudo, Basic Tools)
+#  Main Makefile - Orchestrator for Modular Installation
 # ==============================================================================
 
-BIN_DIR   := $(HOME)/.bin
-LOCAL_DIR := $(HOME)/.local
-CONF_DIR  := $(HOME)/.config
-TMP_DIR   := /tmp/devtools.$(shell echo $$$$)
-RUSTUP_INIT := https://sh.rustup.rs
+include Makefile.common
 
-# --- Arch Detection ---
-UNAME_P := $(shell uname -m)
-ifeq ($(UNAME_P),x86_64)
-    ARCH := x86_64
-    GOARCH := amd64
-else ifneq ($(filter arm% aarch64,$(UNAME_P)),)
-    ARCH := aarch64
-    GOARCH := arm64
-else
-    ARCH := x86_64
-    GOARCH := amd64
-endif
+.PHONY: help all install install-core install-dev install-git install-advanced install-ai clean uninstall-all
 
-# --- Versions ---
-NVIM_VER    := 0.11.5
-RG_VER      := 14.1.0
-FD_VER      := 10.2.0
-BAT_VER     := 0.25.0
-DUF_VER     := 0.8.1
-DIRENV_VER  := 2.35.0
-JUST_VER    := 1.39.0
-
-GO_VER := 1.25.5
-GO_OS := linux
-GO_ARCH := $(GOARCH)
-GO_TAR := go$(GO_VER).$(GO_OS)-$(GO_ARCH).tar.gz
-GO_URL := https://go.dev/dl/$(GO_TAR)
-GO_DIR := $(HOME)/.local/go
-
-.PHONY: all help install tools nvim bashrc dirs clean uv-tools go rust bat-config lazydocker
-
+# --- Default Target ---
 all: help
 
+# --- Help ---
 help:
-	@echo "Available commands:"
-	@echo "  make install    - Full installation (tools, nvim, bashrc, bat config)"
-	@echo "  make tools      - Install CLI utilities (rg, fd, bat, etc.)"
-	@echo "  make nvim       - Install Neovim + LazyVim + ML Config"
-	@echo "  make bashrc     - Symlink .bashrc to home directory"
-	@echo "  make bat-config - Install Catppuccin theme for bat"
-	@echo "  make lazydocker - Install lazydocker (requires Go)"
-	@echo "  make clean      - Remove build artifacts"
+	@echo "======================================================================"
+	@echo "  Basic SSH Config - Modular Installation System"
+	@echo "======================================================================"
+	@echo ""
+	@echo "Available targets:"
+	@echo ""
+	@echo "  FULL INSTALLATION:"
+	@echo "    make install             - Install core + dev + git tools"
+	@echo "    make install-all         - Install everything (core + dev + git + advanced + ai)"
+	@echo ""
+	@echo "  MODULAR INSTALLATION:"
+	@echo "    make install-core        - Install core CLI tools (rg, fd, bat, fzf, tmux, etc.)"
+	@echo "    make install-dev         - Install development tools (neovim, go, rust, python)"
+	@echo "    make install-git         - Install git tools (delta, bat themes, git config)"
+	@echo "    make install-advanced    - Install advanced tools (sshm, television, broot, glow)"
+	@echo "    make install-ai          - Install AI agents (OpenCode & Crush)"
+	@echo ""
+	@echo "  INDIVIDUAL MAKEFILES:"
+	@echo "    make -f Makefile.core    - Run core tools installation directly"
+	@echo "    make -f Makefile.dev     - Run dev environment setup directly"
+	@echo "    make -f Makefile.git     - Run git tools setup directly"
+	@echo "    make -f Makefile.advanced - Run advanced tools installation directly"
+	@echo "    make -f Makefile.ai      - Run AI agents installation directly"
+	@echo ""
+	@echo "  MAINTENANCE:"
+	@echo "    make clean               - Remove temporary build artifacts"
+	@echo ""
+	@echo "======================================================================"
 
-install: dirs bashrc tools go rust uv-tools nvim bat-config lazydocker
-	@echo "Setup complete. Run 'source ~/.bashrc' to reload."
+# --- Full Installation Targets ---
+install: install-core install-dev install-git
+	@echo ""
+	@echo "======================================================================"
+	@echo "  ✅ Core installation complete!"
+	@echo "======================================================================"
+	@echo ""
+	@echo "Installed:"
+	@echo "  - Core CLI tools (ripgrep, fd, bat, fzf, tmux, etc.)"
+	@echo "  - Development environment (Neovim, Go, Rust, Python tools)"
+	@echo "  - Git tools (delta, themes, git config)"
+	@echo ""
+	@echo "Next steps:"
+	@echo "  - Run 'source ~/.bashrc' to reload your shell"
+	@echo "  - Install advanced tools: make install-advanced"
+	@echo "  - Install AI agents: make install-ai"
+	@echo ""
 
-dirs:
-	mkdir -p $(BIN_DIR) $(LOCAL_DIR) $(CONF_DIR)
+install-all: install install-advanced install-ai
+	@echo ""
+	@echo "======================================================================"
+	@echo "  ✅ Full installation complete (including advanced tools & AI)!"
+	@echo "======================================================================"
+	@echo ""
 
-# --- CLI Tools ---
-tools: dirs $(BIN_DIR)/rg $(BIN_DIR)/fd $(BIN_DIR)/bat $(BIN_DIR)/duf $(BIN_DIR)/direnv $(BIN_DIR)/just $(BIN_DIR)/fzf
+# --- Modular Installation Targets ---
+install-core:
+	@$(MAKE) -f Makefile.core all
 
-$(BIN_DIR)/rg:
-	@echo "==> Installing ripgrep..."
-	mkdir -p $(TMP_DIR)/rg && cd $(TMP_DIR)/rg && \
-	curl -fLO https://github.com/BurntSushi/ripgrep/releases/download/$(RG_VER)/ripgrep-$(RG_VER)-$(ARCH)-unknown-linux-musl.tar.gz && \
-	tar -xzf *.tar.gz --strip-components=1 && \
-	cp rg $(BIN_DIR)/
+install-dev:
+	@$(MAKE) -f Makefile.dev all
 
-$(BIN_DIR)/fd:
-	@echo "==> Installing fd..."
-	mkdir -p $(TMP_DIR)/fd && cd $(TMP_DIR)/fd && \
-	curl -fLO https://github.com/sharkdp/fd/releases/download/v$(FD_VER)/fd-v$(FD_VER)-$(ARCH)-unknown-linux-musl.tar.gz && \
-	tar -xzf *.tar.gz --strip-components=1 && \
-	cp fd $(BIN_DIR)/
+install-git:
+	@$(MAKE) -f Makefile.git all
 
-$(BIN_DIR)/bat:
-	@echo "==> Installing bat..."
-	mkdir -p $(TMP_DIR)/bat && cd $(TMP_DIR)/bat && \
-	curl -fLO https://github.com/sharkdp/bat/releases/download/v$(BAT_VER)/bat-v$(BAT_VER)-$(ARCH)-unknown-linux-musl.tar.gz && \
-	tar -xzf *.tar.gz --strip-components=1 && \
-	cp bat $(BIN_DIR)/
+install-advanced:
+	@$(MAKE) -f Makefile.advanced all
 
-$(BIN_DIR)/duf:
-	@echo "==> Installing duf..."
-	mkdir -p $(TMP_DIR)/duf && cd $(TMP_DIR)/duf && \
-	curl -fLO https://github.com/muesli/duf/releases/download/v$(DUF_VER)/duf_$(DUF_VER)_Linux_$(ARCH).tar.gz && \
-	tar -xzf *.tar.gz && \
-	cp duf $(BIN_DIR)/
+install-ai:
+	@$(MAKE) -f Makefile.ai all
 
-$(BIN_DIR)/direnv:
-	@echo "==> Installing direnv..."
-	curl -fL -o $(BIN_DIR)/direnv https://github.com/direnv/direnv/releases/download/v$(DIRENV_VER)/direnv.linux-$(GOARCH)
-	chmod +x $(BIN_DIR)/direnv
+# --- Individual Tool Targets (pass-through) ---
+.PHONY: nvim go rust cargo-tools go-tools uv-tools lazydocker delta git-config bat-config
+.PHONY: sshm television broot tabiew glow opencode crush
 
-$(BIN_DIR)/just:
-	@echo "==> Installing just..."
-	mkdir -p $(TMP_DIR)/just && cd $(TMP_DIR)/just && \
-	curl -fLO https://github.com/casey/just/releases/download/$(JUST_VER)/just-$(JUST_VER)-$(ARCH)-unknown-linux-musl.tar.gz && \
-	tar -xzf *.tar.gz && \
-	cp just $(BIN_DIR)/
-
-$(BIN_DIR)/fzf:
-	@echo "==> Installing fzf..."
-	@if [ ! -d $(LOCAL_DIR)/fzf ]; then \
-		git clone --depth 1 https://github.com/junegunn/fzf.git $(LOCAL_DIR)/fzf; \
-		$(LOCAL_DIR)/fzf/install --bin; \
-	fi
-	ln -sf $(LOCAL_DIR)/fzf/bin/fzf $(BIN_DIR)/fzf
-
-# --- UV Python Tools ---
-uv-tools:
-	@echo "==> Installing uv..."
-	@command -v uv >/dev/null 2>&1 || curl -LsSf https://astral.sh/uv/install.sh | sh
-	@echo "==> Installing Python tools via uv..."
-	uv tool install ruff
-	uv tool install pyright
-	uv tool install debugpy
-	uv tool install black
-	uv tool update-shell
-
-# --- Neovim ---
-nvim: dirs $(BIN_DIR)/nvim nvim-config
-
-$(BIN_DIR)/nvim:
-	@echo "==> Installing Neovim $(NVIM_VER)..."
-	rm -rf $(LOCAL_DIR)/nvim
-	mkdir -p $(LOCAL_DIR)/nvim
-	mkdir -p $(TMP_DIR)/nvim && cd $(TMP_DIR)/nvim && \
-	curl -fLO https://github.com/neovim/neovim/releases/download/v$(NVIM_VER)/nvim-linux-$(ARCH).tar.gz && \
-	tar -xzf *.tar.gz --strip-components=1 && \
-	cp -r * $(LOCAL_DIR)/nvim/
-	ln -sf $(LOCAL_DIR)/nvim/bin/nvim $(BIN_DIR)/nvim
-
-rust:
-	@if command -v cargo >/dev/null; then \
-		echo "Cargo already installed"; \
-	else \
-		echo "Installing Rust (cargo)"; \
-		curl --proto '=https' --tlsv1.2 -sSf $(RUSTUP_INIT) | sh -s -- -y; \
-	fi
+nvim:
+	@$(MAKE) -f Makefile.dev nvim
 
 go:
-	@if command -v go >/dev/null; then \
-		echo "Go already installed"; \
-	else \
-		echo "Installing Go $(GO_VER)"; \
-		mkdir -p $(TMP_DIR); \
-		curl -fsSL $(GO_URL) -o $(TMP_DIR)/$(GO_TAR); \
-		rm -rf $(GO_DIR); \
-		tar -C $(LOCAL_DIR) -xzf $(TMP_DIR)/$(GO_TAR); \
-	fi
+	@$(MAKE) -f Makefile.dev go
+
+rust:
+	@$(MAKE) -f Makefile.dev rust
+
+cargo-tools:
+	@$(MAKE) -f Makefile.dev cargo-tools
+
+go-tools:
+	@$(MAKE) -f Makefile.dev go-tools
+
+uv-tools:
+	@$(MAKE) -f Makefile.dev uv-tools
 
 lazydocker:
-	@echo "==> Installing lazydocker..."
-	@if command -v go >/dev/null; then \
-		export GOPATH="$(HOME)/.local/gopath"; \
-		export PATH="$(GO_DIR)/bin:$$GOPATH/bin:$(PATH)"; \
-		go install github.com/jesseduffield/lazydocker@latest; \
-		mkdir -p $(BIN_DIR); \
-		ln -sf $$GOPATH/bin/lazydocker $(BIN_DIR)/lazydocker; \
-	else \
-		echo "Go is required to install lazydocker. Run 'make go' first."; \
-	fi
+	@$(MAKE) -f Makefile.dev lazydocker
 
+delta:
+	@$(MAKE) -f Makefile.git delta
 
-nvim-config:
-	@echo "==> Configuring LazyVim..."
-	rm -rf $(CONF_DIR)/nvim
-	git clone https://github.com/LazyVim/starter $(CONF_DIR)/nvim
-	rm -rf $(CONF_DIR)/nvim/.git
-	@mkdir -p $(CONF_DIR)/nvim/lua/plugins $(CONF_DIR)/nvim/lua/config
-	@echo 'return { { "neovim/nvim-lspconfig", opts = { servers = { pyright = {} } } }, { "mason-org/mason.nvim", opts = { ensure_installed = { "pyright", "ruff", "debugpy", "yaml-language-server" } } }, { "stevearc/conform.nvim", opts = { formatters_by_ft = { python = { "ruff" }, yaml = { "prettier" }, json = { "prettier" } } } } }' > $(CONF_DIR)/nvim/lua/plugins/ml.lua
-	@echo 'return { { "nvim-treesitter/nvim-treesitter", opts = { ensure_installed = { "python", "bash", "json", "yaml", "markdown" } } } }' > $(CONF_DIR)/nvim/lua/plugins/treesitter.lua
-	@grep -q "config.python" $(CONF_DIR)/nvim/init.lua 2>/dev/null || echo 'require("config.python")' >> $(CONF_DIR)/nvim/init.lua
-	@echo 'vim.api.nvim_create_autocmd("FileType", { pattern = "python", callback = function() vim.opt_local.expandtab = true; vim.opt_local.shiftwidth = 4; end })' > $(CONF_DIR)/nvim/lua/config/python.lua
+git-config:
+	@$(MAKE) -f Makefile.git git-config
 
-# --- Bash RC ---
-bashrc:
-	@echo "==> Installing .bashrc..."
-	@if [ -f $(HOME)/.bashrc ] && [ ! -L $(HOME)/.bashrc ]; then \
-		mv $(HOME)/.bashrc $(HOME)/.bashrc.bak; \
-	fi
-	cp $(CURDIR)/.bashrc $(HOME)/.bashrc
-
-# --- Bat Configuration (Catppuccin Theme) ---
 bat-config:
-	@echo "==> Configuring bat with Catppuccin theme..."
-	@mkdir -p $(CONF_DIR)/bat/themes
-	@curl -fsSL -o $(CONF_DIR)/bat/themes/Catppuccin\ Latte.tmTheme https://github.com/catppuccin/bat/raw/main/themes/Catppuccin%20Latte.tmTheme
-	@curl -fsSL -o $(CONF_DIR)/bat/themes/Catppuccin\ Frappe.tmTheme https://github.com/catppuccin/bat/raw/main/themes/Catppuccin%20Frappe.tmTheme
-	@curl -fsSL -o $(CONF_DIR)/bat/themes/Catppuccin\ Macchiato.tmTheme https://github.com/catppuccin/bat/raw/main/themes/Catppuccin%20Macchiato.tmTheme
-	@curl -fsSL -o $(CONF_DIR)/bat/themes/Catppuccin\ Mocha.tmTheme https://github.com/catppuccin/bat/raw/main/themes/Catppuccin%20Mocha.tmTheme
-	@bat cache --build
-	@grep -q "BAT_THEME" $(HOME)/.bashrc 2>/dev/null || echo 'export BAT_THEME="Catppuccin Mocha"' >> $(HOME)/.bashrc
-	@echo "bat themes installed and configured!"
+	@$(MAKE) -f Makefile.git bat-config
 
-clean:
-	rm -rf $(TMP_DIR)
+sshm:
+	@$(MAKE) -f Makefile.advanced sshm
+
+television:
+	@$(MAKE) -f Makefile.advanced television
+
+broot:
+	@$(MAKE) -f Makefile.advanced broot
+
+tabiew:
+	@$(MAKE) -f Makefile.advanced tabiew
+
+glow:
+	@$(MAKE) -f Makefile.advanced glow
+
+opencode:
+	@$(MAKE) -f Makefile.ai opencode
+
+crush:
+	@$(MAKE) -f Makefile.ai crush
+
+# --- Uninstall Targets ---
+
+uninstall-all:
+
+	@echo "======================================================================"
+
+	@echo "  WARNING: This will uninstall ALL tools!"
+
+	@echo "======================================================================"
+
+	@$(MAKE) -f Makefile.advanced uninstall-advanced || true
+
+	@$(MAKE) -f Makefile.ai uninstall-ai || true
+
+	@$(MAKE) -f Makefile.git uninstall-git || true
+
+	@$(MAKE) -f Makefile.dev uninstall-dev || true
+
+	@$(MAKE) -f Makefile.core uninstall-core || true
+
+	@echo "All tools uninstalled!"

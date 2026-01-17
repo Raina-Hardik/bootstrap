@@ -1,0 +1,143 @@
+# ==============================================================================
+#  Development Environment Setup
+# ==============================================================================
+
+include Makefile.common
+
+.PHONY: all install-dev nvim nvim-config go rust cargo-tools go-tools uv-tools lazydocker help uninstall-dev
+
+all: install-dev
+
+help:
+	@echo "======================================================================"
+	@echo "  Makefile.dev - Development Environment Setup"
+	@echo "======================================================================"
+	@echo ""
+	@echo "Available targets:"
+	@echo "  make install-dev     - Install all development tools"
+	@echo "  make uninstall-dev   - Uninstall all development tools"
+	@echo ""
+	@echo "Individual components:"
+	@echo "  make nvim            - Install Neovim + LazyVim"
+	@echo "  make go              - Install Go"
+	@echo "  make rust            - Install Rust/Cargo"
+	@echo "  make cargo-tools     - Install Rust tools (delta, serie)"
+	@echo "  make go-tools        - Install Go tools (yq, lazymake, nap, deletor)"
+	@echo "  make uv-tools        - Install Python tools (ruff, pyright, black, etc.)"
+	@echo "  make lazydocker      - Install lazydocker"
+	@echo ""
+	@echo "======================================================================"
+
+install-dev: dirs nvim go rust cargo-tools go-tools uv-tools lazydocker
+	@echo "==> Development environment installed successfully!"
+
+# --- Neovim ---
+nvim: $(BIN_DIR)/nvim nvim-config
+
+$(BIN_DIR)/nvim:
+	@echo "==> Installing Neovim $(NVIM_VER)..."
+	rm -rf $(LOCAL_DIR)/nvim
+	mkdir -p $(LOCAL_DIR)/nvim
+	mkdir -p $(TMP_DIR)/nvim && cd $(TMP_DIR)/nvim && \
+	curl -fLO https://github.com/neovim/neovim/releases/download/v$(NVIM_VER)/nvim-linux-$(ARCH).tar.gz && \
+	tar -xzf *.tar.gz --strip-components=1 && \
+	cp -r * $(LOCAL_DIR)/nvim/
+	ln -sf $(LOCAL_DIR)/nvim/bin/nvim $(BIN_DIR)/nvim
+
+nvim-config:
+	@echo "==> Configuring LazyVim..."
+	rm -rf $(CONF_DIR)/nvim
+	git clone https://github.com/LazyVim/starter $(CONF_DIR)/nvim
+	rm -rf $(CONF_DIR)/nvim/.git
+	@mkdir -p $(CONF_DIR)/nvim/lua/plugins $(CONF_DIR)/nvim/lua/config
+	@echo 'return { { "neovim/nvim-lspconfig", opts = { servers = { pyright = {} } } }, { "mason-org/mason.nvim", opts = { ensure_installed = { "pyright", "ruff", "debugpy", "yaml-language-server" } } }, { "stevearc/conform.nvim", opts = { formatters_by_ft = { python = { "ruff" }, yaml = { "prettier" }, json = { "prettier" } } } } }' > $(CONF_DIR)/nvim/lua/plugins/ml.lua
+	@echo 'return { { "nvim-treesitter/nvim-treesitter", opts = { ensure_installed = { "python", "bash", "json", "yaml", "markdown" } } } }' > $(CONF_DIR)/nvim/lua/plugins/treesitter.lua
+	@grep -q "config.python" $(CONF_DIR)/nvim/init.lua 2>/dev/null || echo 'require("config.python")' >> $(CONF_DIR)/nvim/init.lua
+	@echo 'vim.api.nvim_create_autocmd("FileType", { pattern = "python", callback = function() vim.opt_local.expandtab = true; vim.opt_local.shiftwidth = 4; end })' > $(CONF_DIR)/nvim/lua/config/python.lua
+
+# --- Go ---
+go:
+	@if command -v go >/dev/null; then \
+		echo "Go already installed"; \
+	else \
+		echo "Installing Go $(GO_VER)"; \
+		mkdir -p $(TMP_DIR); \
+		curl -fsSL $(GO_URL) -o $(TMP_DIR)/$(GO_TAR); \
+		rm -rf $(GO_DIR); \
+		tar -C $(LOCAL_DIR) -xzf $(TMP_DIR)/$(GO_TAR); \
+	fi
+
+go-tools: go
+	@echo "==> Installing Go tools..."
+	@export GOPATH="$(HOME)/.local/gopath"; \
+	export PATH="$(GO_DIR)/bin:$$GOPATH/bin:$(PATH)"; \
+	go install github.com/mikefarah/yq/v4@v$(YQ_VER) && \
+	go install github.com/rshelekhov/lazymake/cmd/lazymake@latest && \
+	go install github.com/maaslalani/nap@main && \
+	go install github.com/pashkov256/deletor@latest && \
+	ln -sf $$GOPATH/bin/yq $(BIN_DIR)/yq
+
+lazydocker:
+	@echo "==> Installing lazydocker..."
+	@if command -v go >/dev/null; then \
+		export GOPATH="$(HOME)/.local/gopath"; \
+		export PATH="$(GO_DIR)/bin:$$GOPATH/bin:$(PATH)"; \
+		go install github.com/jesseduffield/lazydocker@latest; \
+		mkdir -p $(BIN_DIR); \
+		ln -sf $$GOPATH/bin/lazydocker $(BIN_DIR)/lazydocker; \
+	else \
+		echo "Go is required to install lazydocker. Run 'make go' first."; \
+	fi
+
+# --- Rust ---
+rust:
+	@if command -v cargo >/dev/null; then \
+		echo "Cargo already installed"; \
+	else \
+		echo "Installing Rust (cargo)"; \
+		curl --proto '=https' --tlsv1.2 -sSf $(RUSTUP_INIT) | sh -s -- -y; \
+	fi
+
+cargo-tools: rust
+	@echo "==> Installing Rust tools via cargo..."
+	@export PATH="$(HOME)/.cargo/bin:$(PATH)"; \
+	cargo install git-delta && \
+	cargo install --locked serie && \
+	ln -sf $(HOME)/.cargo/bin/delta $(BIN_DIR)/delta
+
+# --- UV Python Tools ---
+uv-tools:
+	@echo "==> Installing uv..."
+	@command -v uv >/dev/null 2>&1 || curl -LsSf https://astral.sh/uv/install.sh | sh
+	@echo "==> Installing Python tools via uv..."
+	uv tool install ruff
+	uv tool install pyright
+	uv tool install debugpy
+	uv tool install black
+	uv tool install httpie
+	uv tool install twg
+	uv tool update-shell
+
+# --- Uninstall Targets ---
+
+uninstall-dev:
+	@echo "==> Uninstalling development environment..."
+	@rm -f $(BIN_DIR)/nvim
+	@rm -rf $(LOCAL_DIR)/nvim
+	@rm -rf $(CONF_DIR)/nvim
+	@rm -rf $(GO_DIR)
+	@rm -f $(BIN_DIR)/yq
+	@rm -f $(BIN_DIR)/lazydocker
+	@if command -v rustup >/dev/null 2>&1; then \
+		echo "Uninstalling Rust (run 'rustup self uninstall' manually if needed)"; \
+	fi
+	@rm -f $(BIN_DIR)/delta
+	@if command -v uv >/dev/null 2>&1; then \
+		uv tool uninstall ruff || true; \
+		uv tool uninstall pyright || true; \
+		uv tool uninstall debugpy || true; \
+		uv tool uninstall black || true; \
+		uv tool uninstall httpie || true; \
+		uv tool uninstall twg || true; \
+	fi
+	@echo "Development environment uninstalled."

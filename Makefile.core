@@ -1,0 +1,144 @@
+# ==============================================================================
+#  Core CLI Tools Installation
+# ==============================================================================
+
+include Makefile.common
+
+.PHONY: all install-core help uninstall-core
+
+all: install-core
+
+help:
+	@echo "======================================================================"
+	@echo "  Makefile.core - Core CLI Tools Installation"
+	@echo "======================================================================"
+	@echo ""
+	@echo "Available targets:"
+	@echo "  make install-core    - Install all core CLI tools"
+	@echo "  make uninstall-core  - Uninstall all core CLI tools"
+	@echo ""
+	@echo "Individual tools:"
+	@echo "  File & Text: rg, fd, bat, duf"
+	@echo "  Shell:       direnv, just, fzf, tmux"
+	@echo "  Utilities:   gh, jq, stow, zoxide, btop"
+	@echo ""
+	@echo "======================================================================"
+
+install-core: dirs $(BIN_DIR)/rg $(BIN_DIR)/fd $(BIN_DIR)/bat $(BIN_DIR)/duf $(BIN_DIR)/direnv $(BIN_DIR)/just $(BIN_DIR)/fzf $(BIN_DIR)/tmux $(BIN_DIR)/gh $(BIN_DIR)/jq $(BIN_DIR)/stow $(BIN_DIR)/zoxide $(BIN_DIR)/btop
+	@echo "==> Core tools installed successfully!"
+
+# --- CLI Tools ---
+
+$(BIN_DIR)/rg:
+	@echo "==> Installing ripgrep..."
+	mkdir -p $(TMP_DIR)/rg && cd $(TMP_DIR)/rg && \
+	curl -fLO https://github.com/BurntSushi/ripgrep/releases/download/$(RG_VER)/ripgrep-$(RG_VER)-$(ARCH)-unknown-linux-musl.tar.gz && \
+	tar -xzf *.tar.gz --strip-components=1 && \
+	cp rg $(BIN_DIR)/
+
+$(BIN_DIR)/fd:
+	@echo "==> Installing fd..."
+	mkdir -p $(TMP_DIR)/fd && cd $(TMP_DIR)/fd && \
+	curl -fLO https://github.com/sharkdp/fd/releases/download/v$(FD_VER)/fd-v$(FD_VER)-$(ARCH)-unknown-linux-musl.tar.gz && \
+	tar -xzf *.tar.gz --strip-components=1 && \
+	cp fd $(BIN_DIR)/
+
+$(BIN_DIR)/bat:
+	@echo "==> Installing bat..."
+	mkdir -p $(TMP_DIR)/bat && cd $(TMP_DIR)/bat && \
+	curl -fLO https://github.com/sharkdp/bat/releases/download/v$(BAT_VER)/bat-v$(BAT_VER)-$(ARCH)-unknown-linux-musl.tar.gz && \
+	tar -xzf *.tar.gz --strip-components=1 && \
+	cp bat $(BIN_DIR)/
+
+$(BIN_DIR)/duf:
+	@echo "==> Installing duf..."
+	mkdir -p $(TMP_DIR)/duf && cd $(TMP_DIR)/duf && \
+	curl -fLO https://github.com/muesli/duf/releases/download/v$(DUF_VER)/duf_$(DUF_VER)_Linux_$(ARCH).tar.gz && \
+	tar -xzf *.tar.gz && \
+	cp duf $(BIN_DIR)/
+
+$(BIN_DIR)/direnv:
+	@echo "==> Installing direnv..."
+	curl -fL -o $(BIN_DIR)/direnv https://github.com/direnv/direnv/releases/download/v$(DIRENV_VER)/direnv.linux-$(GOARCH)
+	chmod +x $(BIN_DIR)/direnv
+
+$(BIN_DIR)/just:
+	@echo "==> Installing just..."
+	mkdir -p $(TMP_DIR)/just && cd $(TMP_DIR)/just && \
+	curl -fLO https://github.com/casey/just/releases/download/$(JUST_VER)/just-$(JUST_VER)-$(ARCH)-unknown-linux-musl.tar.gz && \
+	tar -xzf *.tar.gz && \
+	cp just $(BIN_DIR)/
+
+$(BIN_DIR)/fzf:
+	@echo "==> Installing fzf..."
+	@if [ ! -d $(LOCAL_DIR)/fzf ]; then \
+		git clone --depth 1 https://github.com/junegunn/fzf.git $(LOCAL_DIR)/fzf; \
+		$(LOCAL_DIR)/fzf/install --bin; \
+	fi
+	ln -sf $(LOCAL_DIR)/fzf/bin/fzf $(BIN_DIR)/fzf
+
+$(BIN_DIR)/tmux:
+	@echo "==> Installing tmux..."
+	mkdir -p $(TMP_DIR)/tmux && cd $(TMP_DIR)/tmux && \
+	curl -fLO https://github.com/tmux/tmux/releases/download/$(TMUX_VER)/tmux-$(TMUX_VER).tar.gz && \
+	tar -xzf *.tar.gz --strip-components=1 && \
+	./configure --prefix=$(LOCAL_DIR) && \
+	make && make install && \
+	ln -sf $(LOCAL_DIR)/bin/tmux $(BIN_DIR)/tmux
+
+$(BIN_DIR)/gh:
+	@echo "==> Installing GitHub CLI..."
+	mkdir -p $(TMP_DIR)/gh && cd $(TMP_DIR)/gh && \
+	curl -fLO https://github.com/cli/cli/releases/download/v$(GH_VER)/gh_$(GH_VER)_linux_$(GOARCH).tar.gz && \
+	tar -xzf *.tar.gz --strip-components=1 && \
+	cp bin/gh $(BIN_DIR)/
+
+$(BIN_DIR)/jq:
+	@echo "==> Installing jq..."
+	curl -fL -o $(BIN_DIR)/jq https://github.com/jqlang/jq/releases/download/jq-$(JQ_VER)/jq-linux-$(GOARCH)
+	chmod +x $(BIN_DIR)/jq
+
+$(BIN_DIR)/stow:
+	@echo "==> Installing GNU Stow..."
+	mkdir -p $(TMP_DIR)/stow && cd $(TMP_DIR)/stow && \
+	curl -fLO https://ftp.gnu.org/gnu/stow/stow-$(STOW_VER).tar.gz && \
+	tar -xzf *.tar.gz --strip-components=1 && \
+	./configure --prefix=$(LOCAL_DIR) && \
+	make && make install && \
+	ln -sf $(LOCAL_DIR)/bin/stow $(BIN_DIR)/stow
+
+$(BIN_DIR)/zoxide:
+	@echo "==> Installing zoxide..."
+	mkdir -p $(TMP_DIR)/zoxide && cd $(TMP_DIR)/zoxide && \
+	curl -fLO https://github.com/ajeetdsouza/zoxide/releases/download/v$(ZOXIDE_VER)/zoxide-$(ZOXIDE_VER)-$(ARCH)-unknown-linux-musl.tar.gz && \
+	tar -xzf *.tar.gz && \
+	cp zoxide $(BIN_DIR)/
+
+$(BIN_DIR)/btop:
+	@echo "==> Installing btop..."
+	mkdir -p $(TMP_DIR)/btop && cd $(TMP_DIR)/btop && \
+	curl -fLO https://github.com/aristocratos/btop/releases/download/v$(BTOP_VER)/btop-$(ARCH)-linux-musl.tbz && \
+	tar -xjf *.tbz --strip-components=2 && \
+	cp btop $(BIN_DIR)/
+
+# --- Uninstall Targets ---
+
+uninstall-core:
+	@echo "==> Uninstalling core CLI tools..."
+	@rm -f $(BIN_DIR)/rg
+	@rm -f $(BIN_DIR)/fd
+	@rm -f $(BIN_DIR)/bat
+	@rm -f $(BIN_DIR)/duf
+	@rm -f $(BIN_DIR)/direnv
+	@rm -f $(BIN_DIR)/just
+	@rm -f $(BIN_DIR)/fzf
+	@rm -rf $(LOCAL_DIR)/fzf
+	@rm -f $(BIN_DIR)/tmux
+	@rm -f $(LOCAL_DIR)/bin/tmux
+	@rm -f $(BIN_DIR)/gh
+	@rm -f $(BIN_DIR)/jq
+	@rm -f $(BIN_DIR)/stow
+	@rm -f $(LOCAL_DIR)/bin/stow
+	@rm -f $(BIN_DIR)/zoxide
+	@rm -f $(BIN_DIR)/btop
+	@echo "Core CLI tools uninstalled."
