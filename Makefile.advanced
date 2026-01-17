@@ -35,7 +35,7 @@ sshm: $(BIN_DIR)/sshm
 $(BIN_DIR)/sshm:
 	@echo "==> Installing SSHM..."
 	mkdir -p $(TMP_DIR)/sshm && cd $(TMP_DIR)/sshm && \
-	curl -fLO https://github.com/Gu1llaum-3/sshm/releases/latest/download/sshm-linux-amd64.tar.gz && \
+	curl -fLO https://github.com/Gu1llaum-3/sshm/releases/download/v1.10.0/sshm-linux-amd64.tar.gz && \
 	tar -xzf *.tar.gz && \
 	cp sshm $(BIN_DIR)/
 
@@ -44,8 +44,8 @@ television: $(BIN_DIR)/tv
 
 $(BIN_DIR)/tv:
 	@echo "==> Installing Television..."
-	@if command -v cargo >/dev/null; then \
-		export PATH="$(HOME)/.cargo/bin:$(PATH)"; \
+	@export PATH="$(HOME)/.cargo/bin:$(PATH)"; \
+	if command -v cargo >/dev/null; then \
 		cargo install television; \
 		ln -sf $(HOME)/.cargo/bin/tv $(BIN_DIR)/tv; \
 	else \
@@ -58,8 +58,8 @@ broot: $(BIN_DIR)/br
 
 $(BIN_DIR)/br:
 	@echo "==> Installing Broot..."
-	@if command -v cargo >/dev/null; then \
-		export PATH="$(HOME)/.cargo/bin:$(PATH)"; \
+	@export PATH="$(HOME)/.cargo/bin:$(PATH)"; \
+	if command -v cargo >/dev/null; then \
 		cargo install broot; \
 		ln -sf $(HOME)/.cargo/bin/broot $(BIN_DIR)/br; \
 	else \
@@ -72,8 +72,8 @@ tabiew: $(BIN_DIR)/tw
 
 $(BIN_DIR)/tw:
 	@echo "==> Installing Tabiew..."
-	@if command -v cargo >/dev/null; then \
-		export PATH="$(HOME)/.cargo/bin:$(PATH)"; \
+	@export PATH="$(HOME)/.cargo/bin:$(PATH)"; \
+	if command -v cargo >/dev/null; then \
 		cargo install --locked tabiew; \
 		ln -sf $(HOME)/.cargo/bin/tw $(BIN_DIR)/tw; \
 	else \
@@ -86,9 +86,9 @@ glow: $(BIN_DIR)/glow
 
 $(BIN_DIR)/glow:
 	@echo "==> Installing Glow..."
-	@if command -v go >/dev/null; then \
-		export GOPATH="$(HOME)/.local/gopath"; \
-		export PATH="$(GO_DIR)/bin:$$GOPATH/bin:$(PATH)"; \
+	@export GOPATH="$(HOME)/.local/gopath"; \
+	export PATH="$(GO_DIR)/bin:$$GOPATH/bin:$(PATH)"; \
+	if command -v go >/dev/null; then \
 		go install github.com/charmbracelet/glow@latest; \
 		ln -sf $$GOPATH/bin/glow $(BIN_DIR)/glow; \
 	else \
