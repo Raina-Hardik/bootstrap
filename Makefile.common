@@ -23,19 +23,19 @@ endif
 
 # --- Tool Versions ---
 NVIM_VER    := 0.11.5
-RG_VER      := 15.1.0   # Updated from 14.1.0
-FD_VER      := 10.3.0   # Updated from 10.2.0
-BAT_VER     := 0.26.1   # Updated from 0.25.0
-DUF_VER     := 0.9.1    # Updated from 0.8.1
-DIRENV_VER  := 2.37.1   # Updated from 2.35.0
-JUST_VER    := 1.46.0   # Updated from 1.39.0
+RG_VER      := 15.1.0
+FD_VER      := 10.3.0
+BAT_VER     := 0.26.1
+DUF_VER     := 0.9.1
+DIRENV_VER  := 2.37.1
+JUST_VER    := 1.46.0
 TMUX_VER    := 3.6a
-GH_VER      := 2.85.0   # Updated from 2.83.2
+GH_VER      := 2.85.0
 JQ_VER      := 1.8.1
-STOW_VER    := 2.4.1    # Updated from 2.4.0
-ZOXIDE_VER  := 0.9.8    # Updated from 0.9.6
-BTOP_VER    := 1.4.6    # Updated from 1.4.0
-YQ_VER      := 4.50.1   # Updated from 4.45.1
+STOW_VER    := 2.4.1
+ZOXIDE_VER  := 0.9.8
+BTOP_VER    := 1.4.6
+YQ_VER      := 4.50.1
 
 GO_VER := 1.25.5
 GO_OS := linux
