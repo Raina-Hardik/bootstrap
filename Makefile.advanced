@@ -34,10 +34,7 @@ sshm: $(BIN_DIR)/sshm
 
 $(BIN_DIR)/sshm:
 	@echo "==> Installing SSHM..."
-	mkdir -p $(TMP_DIR)/sshm && cd $(TMP_DIR)/sshm && \
-	curl -fLO https://github.com/Gu1llaum-3/sshm/releases/download/v1.10.0/sshm-linux-amd64.tar.gz && \
-	tar -xzf *.tar.gz && \
-	cp sshm $(BIN_DIR)/
+	curl -sSL https://github.com/Gu1llaum-3/sshm/raw/main/install/unix.sh | sh -s -- -b $(BIN_DIR)
 
 # --- Television - Fuzzy Finder ---
 television: $(BIN_DIR)/tv
