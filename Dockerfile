@@ -40,10 +40,38 @@ RUN apt-get update && apt-get install -y \
 # Set default shell to bash
 SHELL ["/bin/bash", "-c"]
 
+# Create a non-root user for testing
+RUN useradd -m -s /bin/bash devuser && \
+    mkdir -p /home/devuser/.bin /home/devuser/.local && \
+    chown -R devuser:devuser /home/devuser
+
+# Switch to non-root user
+USER devuser
+
 # Default working directory
-WORKDIR /root
+WORKDIR /home/devuser
+
+# Clone the basic-ssh-config repo and run installation
+RUN git clone https://github.com/Raina-Hardik/basic-ssh-config.git /tmp/basic-ssh-config && \
+    cd /tmp/basic-ssh-config && \
+    make install && \
+    echo "✅ Installation completed as non-root user!" && \
+    echo "" && \
+    echo "Installed tools in ~/.bin:" && \
+    ls -lah ~/.bin/ 2>/dev/null && \
+    echo "" && \
+    echo "Testing basic CLI tools:" && \
+    ~/.bin/rg --version && \
+    ~/.bin/fd --version && \
+    ~/.bin/bat --version && \
+    ~/.bin/fzf --version && \
+    echo "" && \
+    echo "Testing development tools:" && \
+    ~/.local/nvim/bin/nvim --version | head -1 && \
+    ~/.local/go/bin/go version && \
+    ~/.cargo/bin/rustc --version && \
+    echo "" && \
+    echo "✅ All installations work as non-root user!"
 
 # Example: print versions to confirm installation
-CMD gcc --version && g++ --version && make --version && \
-    git --version && curl --version && wget --version && \
-    python3 --version && pip3 --version
+CMD bash -i
