@@ -26,6 +26,31 @@ make install
 source ~/.bashrc
 ```
 
+## Non-Root User Support
+
+✅ **Fully compatible with non-root users!** All tools install to user-local directories (`~/.bin`, `~/.local`, `~/.cargo`) without requiring sudo.
+
+**Docker Example:**
+
+```dockerfile
+# Create and use non-root user
+RUN useradd -m -s /bin/bash devuser
+USER devuser
+
+# Installation works without sudo
+WORKDIR /home/devuser
+RUN git clone https://github.com/Raina-Hardik/basic-ssh-config.git && \
+    cd basic-ssh-config && \
+    make install
+```
+
+This makes the setup ideal for:
+
+- Containerized environments
+- Remote systems with limited privileges
+- Shared multi-user systems
+- CI/CD pipelines
+
 ## Installation Targets
 
 ```bash
