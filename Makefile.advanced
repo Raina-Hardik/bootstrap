@@ -79,8 +79,10 @@ $(BIN_DIR)/tw:
 	@echo "==> Installing Tabiew..."
 	@export PATH="$(HOME)/.cargo/bin:$(PATH)"; \
 	if command -v cargo >/dev/null; then \
-		cargo install --locked tabiew; \
-		ln -sf $(HOME)/.cargo/bin/tw $(BIN_DIR)/tw; \
+		mkdir -p $(TMP_DIR)/tabiew && cd $(TMP_DIR)/tabiew && \
+		git clone https://github.com/shshemi/tabiew && cd tabiew && \
+		cargo build --release && \
+		cp ./target/release/tw $(BIN_DIR)/tw; \
 	else \
 		echo "Rust/Cargo is required. Install via: make -f Makefile.dev rust"; \
 		exit 1; \
