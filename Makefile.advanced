@@ -26,7 +26,7 @@ help:
 	@echo ""
 	@echo "======================================================================"
 
-install-advanced: sshm television broot tabiew glow
+install-advanced: sshm television broot glow
 	@echo "==> Advanced tools installed successfully!"
 
 # --- SSHM - SSH Manager ---
