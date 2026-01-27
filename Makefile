@@ -4,7 +4,7 @@
 
 include Makefile.common
 
-.PHONY: help all install install-core install-dev install-git install-advanced install-ai clean uninstall-all
+.PHONY: help all install install-core install-dev install-git install-advanced install-ai install-zsh clean uninstall-all
 
 # --- Default Target ---
 all: help
@@ -22,6 +22,7 @@ help:
 	@echo "    make install-all         - Install everything (core + dev + git + advanced)"
 	@echo ""
 	@echo "  OPTIONAL (INSTALL SEPARATELY):"
+	@echo "    make install-zsh         - Install zsh + starship + nerd font (Catppuccin Mocha theme)"
 	@echo "    make install-ai          - Install AI agents (OpenCode & Crush) ⚠️  POWERFUL - INSTALL AT YOUR OWN RISK"
 	@echo ""
 	@echo "  INDIVIDUAL MAKEFILES:"
@@ -29,6 +30,7 @@ help:
 	@echo "    make -f Makefile.dev     - Run dev environment setup directly"
 	@echo "    make -f Makefile.git     - Run git tools setup directly"
 	@echo "    make -f Makefile.advanced - Run advanced tools installation directly"
+	@echo "    make -f Makefile.zsh     - Run zsh installation directly"
 	@echo "    make -f Makefile.ai      - Run AI agents installation directly"
 	@echo ""
 	@echo "  MAINTENANCE:"
@@ -78,12 +80,16 @@ install-git:
 install-advanced:
 	@$(MAKE) -f Makefile.advanced all
 
+install-zsh:
+	@$(MAKE) -f Makefile.zsh all
+
 install-ai:
 	@$(MAKE) -f Makefile.ai all
 
 # --- Individual Tool Targets (pass-through) ---
 .PHONY: nvim go rust cargo-tools go-tools uv-tools lazydocker delta git-config bat-config
 .PHONY: sshm television broot tabiew glow opencode crush
+.PHONY: zsh starship nerd-font starship-config zshrc
 
 nvim:
 	@$(MAKE) -f Makefile.dev nvim
@@ -136,6 +142,21 @@ opencode:
 crush:
 	@$(MAKE) -f Makefile.ai crush
 
+zsh:
+	@$(MAKE) -f Makefile.zsh zsh
+
+starship:
+	@$(MAKE) -f Makefile.zsh starship
+
+nerd-font:
+	@$(MAKE) -f Makefile.zsh nerd-font
+
+starship-config:
+	@$(MAKE) -f Makefile.zsh starship-config
+
+zshrc:
+	@$(MAKE) -f Makefile.zsh zshrc
+
 # --- Uninstall Targets ---
 
 uninstall-all:
@@ -147,6 +168,8 @@ uninstall-all:
 	@echo "======================================================================"
 
 	@$(MAKE) -f Makefile.advanced uninstall-advanced || true
+
+	@$(MAKE) -f Makefile.zsh uninstall-zsh || true
 
 	@$(MAKE) -f Makefile.ai uninstall-ai || true
 
