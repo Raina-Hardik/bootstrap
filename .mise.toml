@@ -34,9 +34,10 @@ uv = "latest"
 "go:github.com/mikefarah/yq/v4" = "latest"
 "go:github.com/charmbracelet/glow" = "latest"
 "go:github.com/jesseduffield/lazydocker" = "latest"
-# unavoidable github
-neovim = "0.11.5"
-tmux = "latest"
-github-cli = "2.85.0"
-jq = "latest"
-fzf = "latest"
+
+# GitHub tools (commented out due to API rate limits in Docker)
+# neovim = "0.11.5"
+# tmux = "latest"
+# github-cli = "2.85.0"
+# jq = "latest"
+# fzf = "latest"
