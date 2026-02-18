@@ -76,6 +76,7 @@ make lazydocker   # lazydocker via mise
 - **duf** - Disk usage utility
 - **direnv** - Environment variable manager
 - **just** - Command runner
+- **dotbot** - Dotfile manager (YAML-driven)
 
 ### Development Tools
 

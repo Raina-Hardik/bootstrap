@@ -329,27 +329,27 @@ rm ~/.bin/gh
 
 ---
 
-### 13. stow - Dotfile Manager
+### 13. dotbot - Dotfile Manager
 
-**Purpose**: GNU Stow symlink-based dotfile management tool.
+**Purpose**: YAML-driven dotfile manager for linking and setup tasks.
 
 #### Installation
 
 ```bash
-# Already handled by Makefile
+# Installed via uv (managed by mise)
 make tools
 ```
 
 #### Uninstall
 
 ```bash
-rm ~/.bin/stow
+uv tool uninstall dotbot
 ```
 
 #### Comments
 
 - **Priority**: 3/5 - Useful for managing configuration files
-- **Easy Config**: Straightforward symlink approach
+- **Easy Config**: Simple YAML syntax, portable across machines
 - **Verdict**: **CORE** - Always installed
 
 ---

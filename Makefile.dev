@@ -4,7 +4,7 @@
 
 include Makefile.common
 
-.PHONY: all install-dev mise nvim nvim-config go rust cargo-tools go-tools uv-tools lazydocker help uninstall-dev
+.PHONY: all install-dev mise nvim nvim-config help uninstall-dev
 
 all: install-dev
 
@@ -16,23 +16,15 @@ help:
 	@echo "Available targets:"
 	@echo "  make install-dev     - Install all development tools"
 	@echo "  make uninstall-dev   - Uninstall all development tools"
-	@echo ""
-	@echo "Individual components:"
-	@echo "  make mise            - Install mise runtime manager + configured tools"
-	@echo "  make nvim            - Install Neovim via mise + LazyVim config"
-	@echo "  make go              - Install Go via mise"
-	@echo "  make rust            - Install Rust/Cargo via mise"
-	@echo "  make cargo-tools     - Install Rust tools (delta, serie) via mise"
-	@echo "  make go-tools        - Install Go tools (yq, lazymake, nap, deletor) via mise"
-	@echo "  make uv-tools        - Install Python tools (ruff, pyright, black, etc.) via mise"
-	@echo "  make lazydocker      - Install lazydocker via mise"
+	@echo "  make mise            - Install mise + all tools from .mise.toml"
+	@echo "  make nvim            - Setup Neovim with LazyVim"
 	@echo ""
 	@echo "======================================================================"
 
-install-dev: dirs mise nvim go rust cargo-tools go-tools uv-tools lazydocker
+install-dev: dirs mise nvim-config
 	@echo "==> Development environment installed successfully!"
 
-# --- Mise ---
+# --- Mise & All Tools ---
 mise:
 	@if command -v mise >/dev/null 2>&1; then \
 		echo "mise already installed"; \
@@ -42,19 +34,15 @@ mise:
 	fi
 	@MISE_BIN="$$(command -v mise || echo $(HOME)/.local/bin/mise)"; \
 	if [ -x "$$MISE_BIN" ]; then \
-		echo "==> Installing configured tools from .mise.toml..."; \
+		echo "==> Installing all tools from .mise.toml..."; \
 		"$$MISE_BIN" install; \
 	else \
-		echo "mise install did not produce an executable in PATH or ~/.local/bin"; \
+		echo "mise install failed"; \
 		exit 1; \
 	fi
 
-# --- Neovim ---
-nvim: mise nvim-config
-	@MISE_BIN="$$(command -v mise || echo $(MISE_BIN))"; \
-	"$$MISE_BIN" install neovim
-
-nvim-config:
+# --- Neovim + LazyVim ---
+nvim: mise
 	@echo "==> Configuring LazyVim..."
 	rm -rf $(CONF_DIR)/nvim
 	git clone https://github.com/LazyVim/starter $(CONF_DIR)/nvim
@@ -65,37 +53,16 @@ nvim-config:
 	@grep -q "config.python" $(CONF_DIR)/nvim/init.lua 2>/dev/null || echo 'require("config.python")' >> $(CONF_DIR)/nvim/init.lua
 	@echo 'vim.api.nvim_create_autocmd("FileType", { pattern = "python", callback = function() vim.opt_local.expandtab = true; vim.opt_local.shiftwidth = 4; end })' > $(CONF_DIR)/nvim/lua/config/python.lua
 
-# --- Go ---
-go: mise
-	@MISE_BIN="$$(command -v mise || echo $(HOME)/.local/bin/mise)"; \
-	"$$MISE_BIN" install go
-
-go-tools: go
-	@echo "==> Installing Go tools..."
-	@MISE_BIN="$$(command -v mise || echo $(HOME)/.local/bin/mise)"; \
-	"$$MISE_BIN" install yq "go:github.com/rshelekhov/lazymake/cmd/lazymake" "go:github.com/maaslalani/nap" "go:github.com/pashkov256/deletor"
-
-lazydocker: go
-	@echo "==> Installing lazydocker..."
-	@MISE_BIN="$$(command -v mise || echo $(HOME)/.local/bin/mise)"; \
-	"$$MISE_BIN" install lazydocker
-
-# --- Rust ---
-rust: mise
-	@MISE_BIN="$$(command -v mise || echo $(HOME)/.local/bin/mise)"; \
-	"$$MISE_BIN" install rust
-
-cargo-tools: rust
-	@echo "==> Installing Rust tools via cargo..."
-	@MISE_BIN="$$(command -v mise || echo $(HOME)/.local/bin/mise)"; \
-	"$$MISE_BIN" install delta "cargo:serie"
-
-# --- UV Python Tools ---
-uv-tools: mise
-	@echo "==> Installing Python tools via uv..."
-	@MISE_BIN="$$(command -v mise || echo $(HOME)/.local/bin/mise)"; \
-	"$$MISE_BIN" install ruff black && \
-	"$$MISE_BIN" x uv -- sh -lc 'uv tool install pyright || true; uv tool install debugpy || true; uv tool install httpie || true; uv tool install twg || true; uv tool update-shell || true'
+nvim-config: mise
+	@echo "==> Configuring LazyVim..."
+	rm -rf $(CONF_DIR)/nvim
+	git clone https://github.com/LazyVim/starter $(CONF_DIR)/nvim
+	rm -rf $(CONF_DIR)/nvim/.git
+	@mkdir -p $(CONF_DIR)/nvim/lua/plugins $(CONF_DIR)/nvim/lua/config
+	@echo 'return { { "neovim/nvim-lspconfig", opts = { servers = { pyright = {} } } }, { "mason-org/mason.nvim", opts = { ensure_installed = { "pyright", "ruff", "debugpy", "yaml-language-server" } } }, { "stevearc/conform.nvim", opts = { formatters_by_ft = { python = { "ruff" }, yaml = { "prettier" }, json = { "prettier" } } } } }' > $(CONF_DIR)/nvim/lua/plugins/ml.lua
+	@echo 'return { { "nvim-treesitter/nvim-treesitter", opts = { ensure_installed = { "python", "bash", "json", "yaml", "markdown" } } } }' > $(CONF_DIR)/nvim/lua/plugins/treesitter.lua
+	@grep -q "config.python" $(CONF_DIR)/nvim/init.lua 2>/dev/null || echo 'require("config.python")' >> $(CONF_DIR)/nvim/init.lua
+	@echo 'vim.api.nvim_create_autocmd("FileType", { pattern = "python", callback = function() vim.opt_local.expandtab = true; vim.opt_local.shiftwidth = 4; end })' > $(CONF_DIR)/nvim/lua/config/python.lua
 
 # --- Uninstall Targets ---
 
@@ -104,7 +71,6 @@ uninstall-dev:
 	@rm -rf $(CONF_DIR)/nvim
 	@MISE_BIN="$$(command -v mise || echo $(HOME)/.local/bin/mise)"; \
 	if [ -x "$$MISE_BIN" ]; then \
-		"$$MISE_BIN" uninstall neovim go rust yq lazydocker delta "cargo:serie" "go:github.com/rshelekhov/lazymake/cmd/lazymake" "go:github.com/maaslalani/nap" "go:github.com/pashkov256/deletor" ruff black || true; \
-		"$$MISE_BIN" x uv -- sh -lc 'uv tool uninstall pyright || true; uv tool uninstall debugpy || true; uv tool uninstall httpie || true; uv tool uninstall twg || true'; \
+		"$$MISE_BIN" uninstall --all || true; \
 	fi
 	@echo "Development environment uninstalled."
