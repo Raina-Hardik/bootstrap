@@ -70,19 +70,20 @@ RUN cd /tmp/basic-ssh-config && \
     echo "✅ Installation completed as non-root user!"
 
 # Step 3: Verify installation and test basic CLI tools
-RUN echo "Installed tools in mise:" && \
+RUN eval "$($HOME/.local/bin/mise activate bash)" && \
+    echo "Installed tools in mise:" && \
     ~/.local/bin/mise ls --current && \
     echo "" && \
     echo "Testing basic CLI tools:" && \
-    ~/.local/bin/mise x -- rg --version && \
-    ~/.local/bin/mise x -- fd --version && \
-    ~/.local/bin/mise x -- bat --version && \
-    ~/.local/bin/mise x -- fzf --version && \
+    rg --version && \
+    fd --version && \
+    bat --version && \
+    fzf --version && \
     echo "" && \
     echo "Testing development tools:" && \
-    ~/.local/bin/mise x -- nvim --version | head -1 && \
-    ~/.local/bin/mise x -- go version && \
-    ~/.local/bin/mise x -- rustc --version && \
+    nvim --version | head -1 && \
+    go version && \
+    rustc --version && \
     echo "" && \
     echo "✅ All installations work as non-root user!"
 
