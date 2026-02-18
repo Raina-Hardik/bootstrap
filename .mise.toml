@@ -36,8 +36,8 @@ python = "3.14"
 "go:github.com/jesseduffield/lazydocker" = "latest"
 
 # GitHub tools (commented out due to API rate limits in Docker)
-# neovim = "0.11.5"
-# tmux = "latest"
-# github-cli = "2.85.0"
-# jq = "latest"
-# fzf = "latest"
+neovim = "0.11.5"
+tmux = "latest"
+github-cli = "2.85.0"
+jq = "latest"
+fzf = "latest"
