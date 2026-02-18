@@ -55,10 +55,10 @@ WORKDIR /home/devuser
 # Copy local context (build context) into the container
 COPY --chown=devuser:devuser . /tmp/basic-ssh-config
 
-# Run installation from local context - must trust .mise.toml before make commands
+# Install mise first, trust .mise.toml, then run make install
 RUN cd /tmp/basic-ssh-config && \
-    mkdir -p /home/devuser/.config/mise && \
-    echo "/tmp/basic-ssh-config/.mise.toml" >> /home/devuser/.config/mise/.trusted-repos && \
+    curl https://mise.jdx.dev/install.sh | sh - && \
+    /home/devuser/.local/bin/mise trust && \
     make install && \
     echo "✅ Installation completed as non-root user!" && \
     echo "" && \
