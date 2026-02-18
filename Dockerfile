@@ -57,6 +57,7 @@ COPY --chown=devuser:devuser . /tmp/basic-ssh-config
 
 # Run installation from local context
 RUN cd /tmp/basic-ssh-config && \
+    make mise && \
     ~/.local/bin/mise trust && \
     make install && \
     echo "✅ Installation completed as non-root user!" && \
