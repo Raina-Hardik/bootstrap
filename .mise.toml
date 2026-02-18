@@ -5,7 +5,6 @@ go = "1.26.0"
 rust = "stable"
 python = "3.14"
 uv = "latest"
-lua = "5.1"
 
 # rust tools
 "cargo:fd-find" = "latest"
@@ -20,11 +19,11 @@ lua = "5.1"
 "cargo:diskonaut" = "latest"
 
 # python tools (install via uv after uv is available)
-# "uvx:ruff" = "latest"
-# "uvx:black" = "latest"
-# "uvx:dotbot" = "latest"
-# "uvx:pre-commit" = "latest"
-# "uvx:pyright" = "latest"
+"pipx:ruff" = "latest"
+"pipx:black" = "latest"
+"pipx:dotbot" = "latest"
+"pipx:pre-commit" = "latest"
+"pipx:pyright" = "latest"
 
 
 # go tools
