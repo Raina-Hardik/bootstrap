@@ -52,9 +52,11 @@ USER devuser
 # Default working directory
 WORKDIR /home/devuser
 
-# Clone the basic-ssh-config repo and run installation
-RUN git clone https://github.com/Raina-Hardik/basic-ssh-config.git /tmp/basic-ssh-config && \
-    cd /tmp/basic-ssh-config && \
+# Copy local context (build context) into the container
+COPY --chown=devuser:devuser . /tmp/basic-ssh-config
+
+# Run installation from local context
+RUN cd /tmp/basic-ssh-config && \
     make install && \
     echo "✅ Installation completed as non-root user!" && \
     echo "" && \
