@@ -19,12 +19,12 @@ lua = "5.1"
 "cargo:television" = "latest"
 "cargo:diskonaut" = "latest"
 
-# python tools
-"uvx:ruff" = "latest"
-"uvx:black" = "latest"
-"uvx:dotbot" = "latest"
-"uvx:pre-commit" = "latest"
-"uvx:pyright" = "latest"
+# python tools (install via uv after uv is available)
+# "uvx:ruff" = "latest"
+# "uvx:black" = "latest"
+# "uvx:dotbot" = "latest"
+# "uvx:pre-commit" = "latest"
+# "uvx:pyright" = "latest"
 
 
 # go tools
