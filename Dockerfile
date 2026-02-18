@@ -43,7 +43,7 @@ SHELL ["/bin/bash", "-c"]
 
 # Create a non-root user for testing
 RUN useradd -m -s /bin/bash devuser && \
-    mkdir -p /home/devuser/.bin /home/devuser/.local && \
+    mkdir -p /home/devuser/.local && \
     chown -R devuser:devuser /home/devuser
 
 # Switch to non-root user
@@ -58,19 +58,19 @@ RUN git clone https://github.com/Raina-Hardik/basic-ssh-config.git /tmp/basic-ss
     make install && \
     echo "✅ Installation completed as non-root user!" && \
     echo "" && \
-    echo "Installed tools in ~/.bin:" && \
-    ls -lah ~/.bin/ 2>/dev/null && \
+    echo "Installed tools in mise:" && \
+    ~/.local/bin/mise ls --current && \
     echo "" && \
     echo "Testing basic CLI tools:" && \
-    ~/.bin/rg --version && \
-    ~/.bin/fd --version && \
-    ~/.bin/bat --version && \
-    ~/.bin/fzf --version && \
+    ~/.local/bin/mise x -- rg --version && \
+    ~/.local/bin/mise x -- fd --version && \
+    ~/.local/bin/mise x -- bat --version && \
+    ~/.local/bin/mise x -- fzf --version && \
     echo "" && \
     echo "Testing development tools:" && \
-    ~/.local/nvim/bin/nvim --version | head -1 && \
-    ~/.local/go/bin/go version && \
-    ~/.cargo/bin/rustc --version && \
+    ~/.local/bin/mise x -- nvim --version | head -1 && \
+    ~/.local/bin/mise x -- go version && \
+    ~/.local/bin/mise x -- rustc --version && \
     echo "" && \
     echo "✅ All installations work as non-root user!"
 

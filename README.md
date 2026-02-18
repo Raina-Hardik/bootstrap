@@ -28,7 +28,7 @@ source ~/.bashrc
 
 ## Non-Root User Support
 
-✅ **Fully compatible with non-root users!** All tools install to user-local directories (`~/.bin`, `~/.local`, `~/.cargo`) without requiring sudo.
+✅ **Fully compatible with non-root users!** Tools are installed and managed by `mise` in user-local directories (`~/.local/share/mise`, `~/.local/bin`) without requiring sudo.
 
 **Docker Example:**
 
@@ -54,15 +54,15 @@ This makes the setup ideal for:
 ## Installation Targets
 
 ```bash
-make install   # Full installation (tools + mise-managed language stack + nvim + git tools)
-make tools     # CLI utilities only (rg, fd, bat, fzf, duf, direnv, just)
-make mise      # Install mise and runtimes from .mise.toml
-make nvim      # Neovim + LazyVim + ML config
-make bashrc    # Copy .bashrc to home directory
-make go        # Install Go toolchain via mise
-make rust      # Install Rust toolchain (cargo) via mise
-make uv-tools  # Install Python tools via uv using mise-managed uv/python
-make lazydocker # Install lazydocker (requires mise-managed Go)
+make install      # Full installation (core + dev + git)
+make install-all  # Install everything including advanced tools
+make tools        # Core CLI tools via mise
+make mise         # Install mise and all tools in .mise.toml
+make nvim         # Neovim via mise + LazyVim config
+make go           # Go runtime via mise
+make rust         # Rust toolchain via mise
+make uv-tools     # Python tooling via mise/uv
+make lazydocker   # lazydocker via mise
 ```
 
 ## Tools Installed
@@ -81,16 +81,16 @@ make lazydocker # Install lazydocker (requires mise-managed Go)
 
 - **Neovim** (v0.11.5) with LazyVim configuration
 - **mise** - Runtime/version manager for language toolchains
-- **Go** (v1.25.5) - Managed via `mise`
+- **Go** (v1.26.0) - Managed via `mise`
 - **Rust** - Managed via `mise`
 - **Python + uv** - Managed via `mise` for language tooling installs
-- **lazydocker** - Lazy Docker UI (installed via `go install` under mise-managed Go)
+- **lazydocker** - Lazy Docker UI managed by `mise`
   - ruff (linter/formatter)
   - pyright (type checker)
   - debugpy (debugger)
   - black (formatter)
 
-All tools are installed to `~/.bin` or `~/.local` without requiring sudo access.
+All tools are installed to user-local `mise` directories without requiring sudo access.
 
 ## Architecture Support
 

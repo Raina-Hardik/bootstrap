@@ -5,6 +5,7 @@
 include Makefile.common
 
 .PHONY: help all install install-core install-dev install-git install-advanced install-ai install-zsh clean uninstall-all
+.PHONY: tools bashrc mise nvim go rust cargo-tools go-tools uv-tools lazydocker delta git-config bat-config
 
 # --- Default Target ---
 all: help
@@ -46,8 +47,8 @@ install: install-core install-dev install-git
 	@echo "======================================================================"
 	@echo ""
 	@echo "Installed:"
-	@echo "  - Core CLI tools (ripgrep, fd, bat, fzf, tmux, etc.)"
-	@echo "  - Development environment (Neovim + mise-managed Go/Rust/Python tools)"
+	@echo "  - Core CLI tools (mise-managed)"
+	@echo "  - Development environment (Neovim + language/tooling via mise)"
 	@echo "  - Git tools (delta, themes, git config)"
 	@echo ""
 	@echo "Next steps:"
@@ -71,6 +72,13 @@ install-all: install install-advanced
 install-core:
 	@$(MAKE) -f Makefile.core all
 
+tools:
+	@$(MAKE) -f Makefile.core all
+
+bashrc:
+	@cp .bashrc $(HOME)/.bashrc
+	@echo ".bashrc installed at $(HOME)/.bashrc"
+
 install-dev:
 	@$(MAKE) -f Makefile.dev all
 
@@ -87,7 +95,6 @@ install-ai:
 	@$(MAKE) -f Makefile.ai all
 
 # --- Individual Tool Targets (pass-through) ---
-.PHONY: mise nvim go rust cargo-tools go-tools uv-tools lazydocker delta git-config bat-config
 .PHONY: sshm television broot tabiew glow opencode crush
 .PHONY: zsh starship nerd-font starship-config zshrc
 

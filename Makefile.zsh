@@ -63,15 +63,10 @@ zsh:
 
 STARSHIP_VER := 1.23.0
 
-$(BIN_DIR)/starship:
+starship:
 	@echo "==> Installing starship..."
-	mkdir -p $(TMP_DIR)/starship && cd $(TMP_DIR)/starship && \
-	curl -fLO https://github.com/starship/starship/releases/download/v$(STARSHIP_VER)/starship-$(ARCH)-unknown-linux-musl.tar.gz && \
-	tar -xzf *.tar.gz && \
-	cp starship $(BIN_DIR)/
-	@chmod +x $(BIN_DIR)/starship
-
-starship: $(BIN_DIR)/starship
+	@MISE_BIN="$$(command -v mise || echo $(MISE_BIN))"; \
+	"$$MISE_BIN" install starship@$(STARSHIP_VER)
 
 # --- Starship Configuration ---
 
@@ -112,7 +107,10 @@ zshrc:
 
 uninstall-zsh:
 	@echo "==> Uninstalling zsh components..."
-	@rm -f $(BIN_DIR)/starship
+	@MISE_BIN="$$(command -v mise || echo $(MISE_BIN))"; \
+	if [ -x "$$MISE_BIN" ]; then \
+		"$$MISE_BIN" uninstall starship || true; \
+	fi
 	@rm -f $(CONF_DIR)/starship.toml
 	@rm -rf $(FONT_DIR)/JetBrainsMono
 	@rm -f $(HOME)/.zshrc

@@ -8,8 +8,6 @@ export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 export TERM=xterm-256color
 
-export PATH="$HOME/.bin:$PATH"
-
 # mise runtime manager (Go/Rust/Python/uv)
 if [ -x "$HOME/.local/bin/mise" ]; then
   eval "$("$HOME/.local/bin/mise" activate bash)"
@@ -25,14 +23,8 @@ if ! command -v cargo >/dev/null 2>&1 && [ -d "$HOME/.cargo/bin" ]; then
   esac
 fi
 
-# Go workspace (optional, recommended)
+# Go workspace (optional for projects)
 export GOPATH="$HOME/.local/gopath"
-if ! command -v yq >/dev/null 2>&1 && [ -d "$GOPATH/bin" ]; then
-  case ":$PATH:" in
-    *":$GOPATH/bin:"*) ;;
-    *) export PATH="$GOPATH/bin:$PATH" ;;
-  esac
-fi
 
 # Neovim as default editor
 export EDITOR=nvim

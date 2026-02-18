@@ -29,15 +29,9 @@ install-git: delta bat-config git-config
 
 # --- Delta (via Makefile.dev cargo-tools) ---
 delta:
-	@export PATH="$(HOME)/.cargo/bin:$(PATH)"; \
-	if command -v cargo >/dev/null; then \
-		echo "==> Installing delta..."; \
-		cargo install git-delta; \
-		ln -sf $(HOME)/.cargo/bin/delta $(BIN_DIR)/delta; \
-	else \
-		echo "Rust/Cargo is required. Install via: make -f Makefile.dev rust"; \
-		exit 1; \
-	fi
+	@echo "==> Installing delta via mise..."
+	@MISE_BIN="$$(command -v mise || echo $(MISE_BIN))"; \
+	"$$MISE_BIN" install delta
 
 # --- Bat Configuration (Catppuccin Theme) ---
 bat-config:
@@ -47,7 +41,8 @@ bat-config:
 	@curl -fsSL -o $(CONF_DIR)/bat/themes/Catppuccin\ Frappe.tmTheme https://github.com/catppuccin/bat/raw/main/themes/Catppuccin%20Frappe.tmTheme
 	@curl -fsSL -o $(CONF_DIR)/bat/themes/Catppuccin\ Macchiato.tmTheme https://github.com/catppuccin/bat/raw/main/themes/Catppuccin%20Macchiato.tmTheme
 	@curl -fsSL -o $(CONF_DIR)/bat/themes/Catppuccin\ Mocha.tmTheme https://github.com/catppuccin/bat/raw/main/themes/Catppuccin%20Mocha.tmTheme
-	@$(BIN_DIR)/bat cache --build || bat cache --build || true
+	@MISE_BIN="$$(command -v mise || echo $(MISE_BIN))"; \
+	"$$MISE_BIN" x -- bat cache --build || bat cache --build || true
 	@echo "bat themes installed!"
 
 # --- Git Configuration (Delta) ---
@@ -63,7 +58,10 @@ git-config:
 
 uninstall-git:
 	@echo "==> Uninstalling git tools and reverting configuration..."
-	@rm -f $(BIN_DIR)/delta
+	@MISE_BIN="$$(command -v mise || echo $(MISE_BIN))"; \
+	if [ -x "$$MISE_BIN" ]; then \
+		"$$MISE_BIN" uninstall delta || true; \
+	fi
 	@rm -rf $(CONF_DIR)/bat/themes/Catppuccin*.tmTheme
 	@git config --global --unset core.pager || true
 	@git config --global --unset interactive.diffFilter || true

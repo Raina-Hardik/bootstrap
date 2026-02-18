@@ -26,85 +26,64 @@ help:
 	@echo ""
 	@echo "======================================================================"
 
-install-advanced: sshm television broot glow
+install-advanced: sshm television broot tabiew glow
 	@echo "==> Advanced tools installed successfully!"
 
 # --- SSHM - SSH Manager ---
-sshm: $(BIN_DIR)/sshm
-
-$(BIN_DIR)/sshm:
+sshm:
 	@echo "==> Installing SSHM..."
 	@MISE_BIN="$$(command -v mise || echo $(HOME)/.local/bin/mise)"; \
 	if [ ! -x "$$MISE_BIN" ]; then \
 		echo "mise is required. Install via: make -f Makefile.dev mise"; \
 		exit 1; \
 	fi; \
-	export GOPATH="$(HOME)/.local/gopath"; \
-	"$$MISE_BIN" x go@$(GO_VER) -- go install github.com/Gu1llaum-3/sshm@latest; \
-	ln -sf $$GOPATH/bin/sshm $(BIN_DIR)/sshm
+	"$$MISE_BIN" install "go:github.com/Gu1llaum-3/sshm"
 
 # --- Television - Fuzzy Finder ---
-television: $(BIN_DIR)/tv
-
-$(BIN_DIR)/tv:
+television:
 	@echo "==> Installing Television..."
 	@MISE_BIN="$$(command -v mise || echo $(HOME)/.local/bin/mise)"; \
 	if [ ! -x "$$MISE_BIN" ]; then \
 		echo "mise is required. Install via: make -f Makefile.dev mise"; \
 		exit 1; \
 	fi; \
-	"$$MISE_BIN" x rust@stable -- cargo install television; \
-	ln -sf $(HOME)/.cargo/bin/tv $(BIN_DIR)/tv
+	"$$MISE_BIN" install television
 
 # --- Broot - Directory Navigator ---
-broot: $(BIN_DIR)/br
-
-$(BIN_DIR)/br:
+broot:
 	@echo "==> Installing Broot..."
 	@MISE_BIN="$$(command -v mise || echo $(HOME)/.local/bin/mise)"; \
 	if [ ! -x "$$MISE_BIN" ]; then \
 		echo "mise is required. Install via: make -f Makefile.dev mise"; \
 		exit 1; \
 	fi; \
-	"$$MISE_BIN" x rust@stable -- cargo install broot; \
-	ln -sf $(HOME)/.cargo/bin/broot $(BIN_DIR)/br
+	"$$MISE_BIN" install "cargo:broot"
 
 # --- Tabiew - Table Viewer ---
-tabiew: $(BIN_DIR)/tw
-
-$(BIN_DIR)/tw:
+tabiew:
 	@echo "==> Installing Tabiew..."
 	@MISE_BIN="$$(command -v mise || echo $(HOME)/.local/bin/mise)"; \
 	if [ ! -x "$$MISE_BIN" ]; then \
 		echo "mise is required. Install via: make -f Makefile.dev mise"; \
 		exit 1; \
 	fi; \
-	"$$MISE_BIN" x rust@stable -- sh -lc 'mkdir -p $(TMP_DIR)/tabiew && cd $(TMP_DIR)/tabiew && git clone https://github.com/shshemi/tabiew && cd tabiew && cargo build --release && cp ./target/release/tw $(BIN_DIR)/tw'
+	"$$MISE_BIN" install "cargo:tabiew"
 
 # --- Glow - Markdown Viewer ---
-glow: $(BIN_DIR)/glow
-
-$(BIN_DIR)/glow:
+glow:
 	@echo "==> Installing Glow..."
 	@MISE_BIN="$$(command -v mise || echo $(HOME)/.local/bin/mise)"; \
 	if [ ! -x "$$MISE_BIN" ]; then \
 		echo "mise is required. Install via: make -f Makefile.dev mise"; \
 		exit 1; \
 	fi; \
-	export GOPATH="$(HOME)/.local/gopath"; \
-	"$$MISE_BIN" x go@$(GO_VER) -- go install github.com/charmbracelet/glow@latest; \
-	ln -sf $$GOPATH/bin/glow $(BIN_DIR)/glow
+	"$$MISE_BIN" install glow
 # --- Uninstall Targets ---
 
 uninstall-advanced:
 	@echo "==> Uninstalling advanced tools..."
 	@MISE_BIN="$$(command -v mise || echo $(HOME)/.local/bin/mise)"; \
 	if [ -x "$$MISE_BIN" ]; then \
-		"$$MISE_BIN" x rust@stable -- sh -lc 'cargo uninstall television 2>/dev/null || true; cargo uninstall broot 2>/dev/null || true; cargo uninstall tabiew 2>/dev/null || true'; \
+		"$$MISE_BIN" uninstall "go:github.com/Gu1llaum-3/sshm" television "cargo:broot" "cargo:tabiew" glow || true; \
 	fi
-	@rm -f $(BIN_DIR)/sshm
-	@rm -f $(BIN_DIR)/tv
-	@rm -f $(BIN_DIR)/br
-	@rm -f $(BIN_DIR)/tw
-	@rm -f $(BIN_DIR)/glow
 	@echo "Advanced tools uninstalled."
