@@ -49,6 +49,10 @@ RUN useradd -m -s /bin/bash devuser && \
 # Switch to non-root user
 USER devuser
 
+# Set GitHub token for higher API rate limits (build arg, override with: docker build --build-arg GITHUB_TOKEN=your_token)
+ARG GITHUB_TOKEN=""
+ENV GITHUB_TOKEN=${GITHUB_TOKEN}
+
 # Default working directory
 WORKDIR /home/devuser
 
