@@ -70,9 +70,9 @@ RUN cd /tmp/basic-ssh-config && \
     echo "✅ Installation completed as non-root user!"
 
 # Step 3: Verify installation and test basic CLI tools
-RUN eval "$($HOME/.local/bin/mise activate bash)" && \
+RUN export PATH="/home/devuser/.local/bin:$PATH" && \
     echo "Installed tools in mise:" && \
-    ~/.local/bin/mise ls --current && \
+    mise ls --current && \
     echo "" && \
     echo "Testing basic CLI tools:" && \
     rg --version && \
