@@ -11,22 +11,29 @@ export TERM=xterm-256color
 
 export PATH="$HOME/.bin:$PATH"
 
-# Rust / Cargo (fast, idempotent)
-if [ -d "$HOME/.cargo/bin" ]; then
+# mise runtime manager (Go/Rust/Python/uv)
+if [ -x "$HOME/.local/bin/mise" ]; then
+  eval "$("$HOME/.local/bin/mise" activate zsh)"
+elif command -v mise >/dev/null 2>&1; then
+  eval "$(mise activate zsh)"
+fi
+
+# Rust / Cargo fallback (prefer mise shims)
+if ! command -v cargo >/dev/null 2>&1 && [ -d "$HOME/.cargo/bin" ]; then
   case ":$PATH:" in
     *":$HOME/.cargo/bin:"*) ;;
     *) export PATH="$HOME/.cargo/bin:$PATH" ;;
   esac
 fi
 
-# Go
-if [ -d "$HOME/.local/go/bin" ]; then
-  export PATH="$HOME/.local/go/bin:$PATH"
-fi
-
 # Go workspace (optional, recommended)
 export GOPATH="$HOME/.local/gopath"
-export PATH="$GOPATH/bin:$PATH"
+if ! command -v yq >/dev/null 2>&1 && [ -d "$GOPATH/bin" ]; then
+  case ":$PATH:" in
+    *":$GOPATH/bin:"*) ;;
+    *) export PATH="$GOPATH/bin:$PATH" ;;
+  esac
+fi
 
 # Neovim as default editor
 export EDITOR=nvim

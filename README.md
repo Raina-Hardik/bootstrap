@@ -54,14 +54,15 @@ This makes the setup ideal for:
 ## Installation Targets
 
 ```bash
-make install   # Full installation (tools, go, rust, bashrc, uv-tools, nvim, lazydocker)
+make install   # Full installation (tools + mise-managed language stack + nvim + git tools)
 make tools     # CLI utilities only (rg, fd, bat, fzf, duf, direnv, just)
+make mise      # Install mise and runtimes from .mise.toml
 make nvim      # Neovim + LazyVim + ML config
 make bashrc    # Copy .bashrc to home directory
-make go        # Install Go toolchain
-make rust      # Install Rust toolchain (cargo)
-make uv-tools  # Install Python tools via uv (ruff, pyright, debugpy, black)
-make lazydocker # Install lazydocker (requires Go)
+make go        # Install Go toolchain via mise
+make rust      # Install Rust toolchain (cargo) via mise
+make uv-tools  # Install Python tools via uv using mise-managed uv/python
+make lazydocker # Install lazydocker (requires mise-managed Go)
 ```
 
 ## Tools Installed
@@ -79,10 +80,11 @@ make lazydocker # Install lazydocker (requires Go)
 ### Development Tools
 
 - **Neovim** (v0.11.5) with LazyVim configuration
-- **Go** (v1.25.5) - Go programming language
-- **Rust** - Rust toolchain via rustup (cargo)
-- **lazydocker** - Lazy Docker UI (requires Go)
-- **uv** - Python package and tool installer
+- **mise** - Runtime/version manager for language toolchains
+- **Go** (v1.25.5) - Managed via `mise`
+- **Rust** - Managed via `mise`
+- **Python + uv** - Managed via `mise` for language tooling installs
+- **lazydocker** - Lazy Docker UI (installed via `go install` under mise-managed Go)
   - ruff (linter/formatter)
   - pyright (type checker)
   - debugpy (debugger)

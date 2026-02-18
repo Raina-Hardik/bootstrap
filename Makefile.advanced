@@ -34,90 +34,77 @@ sshm: $(BIN_DIR)/sshm
 
 $(BIN_DIR)/sshm:
 	@echo "==> Installing SSHM..."
-	@export GOPATH="$(HOME)/.local/gopath"; \
-	export PATH="$(GO_DIR)/bin:$$GOPATH/bin:$(PATH)"; \
-	if command -v go >/dev/null; then \
-		go install github.com/Gu1llaum-3/sshm@latest; \
-		ln -sf $$GOPATH/bin/sshm $(BIN_DIR)/sshm; \
-	else \
-		echo "Go is required. Install via: make -f Makefile.dev go"; \
+	@MISE_BIN="$$(command -v mise || echo $(HOME)/.local/bin/mise)"; \
+	if [ ! -x "$$MISE_BIN" ]; then \
+		echo "mise is required. Install via: make -f Makefile.dev mise"; \
 		exit 1; \
-	fi
+	fi; \
+	export GOPATH="$(HOME)/.local/gopath"; \
+	"$$MISE_BIN" x go@$(GO_VER) -- go install github.com/Gu1llaum-3/sshm@latest; \
+	ln -sf $$GOPATH/bin/sshm $(BIN_DIR)/sshm
 
 # --- Television - Fuzzy Finder ---
 television: $(BIN_DIR)/tv
 
 $(BIN_DIR)/tv:
 	@echo "==> Installing Television..."
-	@export PATH="$(HOME)/.cargo/bin:$(PATH)"; \
-	if command -v cargo >/dev/null; then \
-		cargo install television; \
-		ln -sf $(HOME)/.cargo/bin/tv $(BIN_DIR)/tv; \
-	else \
-		echo "Rust/Cargo is required. Install via: make -f Makefile.dev rust"; \
+	@MISE_BIN="$$(command -v mise || echo $(HOME)/.local/bin/mise)"; \
+	if [ ! -x "$$MISE_BIN" ]; then \
+		echo "mise is required. Install via: make -f Makefile.dev mise"; \
 		exit 1; \
-	fi
+	fi; \
+	"$$MISE_BIN" x rust@stable -- cargo install television; \
+	ln -sf $(HOME)/.cargo/bin/tv $(BIN_DIR)/tv
 
 # --- Broot - Directory Navigator ---
 broot: $(BIN_DIR)/br
 
 $(BIN_DIR)/br:
 	@echo "==> Installing Broot..."
-	@export PATH="$(HOME)/.cargo/bin:$(PATH)"; \
-	if command -v cargo >/dev/null; then \
-		cargo install broot; \
-		ln -sf $(HOME)/.cargo/bin/broot $(BIN_DIR)/br; \
-	else \
-		echo "Rust/Cargo is required. Install via: make -f Makefile.dev rust"; \
+	@MISE_BIN="$$(command -v mise || echo $(HOME)/.local/bin/mise)"; \
+	if [ ! -x "$$MISE_BIN" ]; then \
+		echo "mise is required. Install via: make -f Makefile.dev mise"; \
 		exit 1; \
-	fi
+	fi; \
+	"$$MISE_BIN" x rust@stable -- cargo install broot; \
+	ln -sf $(HOME)/.cargo/bin/broot $(BIN_DIR)/br
 
 # --- Tabiew - Table Viewer ---
 tabiew: $(BIN_DIR)/tw
 
 $(BIN_DIR)/tw:
 	@echo "==> Installing Tabiew..."
-	@export PATH="$(HOME)/.cargo/bin:$(PATH)"; \
-	if command -v cargo >/dev/null; then \
-		mkdir -p $(TMP_DIR)/tabiew && cd $(TMP_DIR)/tabiew && \
-		git clone https://github.com/shshemi/tabiew && cd tabiew && \
-		cargo build --release && \
-		cp ./target/release/tw $(BIN_DIR)/tw; \
-	else \
-		echo "Rust/Cargo is required. Install via: make -f Makefile.dev rust"; \
+	@MISE_BIN="$$(command -v mise || echo $(HOME)/.local/bin/mise)"; \
+	if [ ! -x "$$MISE_BIN" ]; then \
+		echo "mise is required. Install via: make -f Makefile.dev mise"; \
 		exit 1; \
-	fi
+	fi; \
+	"$$MISE_BIN" x rust@stable -- sh -lc 'mkdir -p $(TMP_DIR)/tabiew && cd $(TMP_DIR)/tabiew && git clone https://github.com/shshemi/tabiew && cd tabiew && cargo build --release && cp ./target/release/tw $(BIN_DIR)/tw'
 
 # --- Glow - Markdown Viewer ---
 glow: $(BIN_DIR)/glow
 
 $(BIN_DIR)/glow:
 	@echo "==> Installing Glow..."
-	@export GOPATH="$(HOME)/.local/gopath"; \
-	export PATH="$(GO_DIR)/bin:$$GOPATH/bin:$(PATH)"; \
-	if command -v go >/dev/null; then \
-		go install github.com/charmbracelet/glow@latest; \
-		ln -sf $$GOPATH/bin/glow $(BIN_DIR)/glow; \
-	else \
-		echo "Go is required. Install via: make -f Makefile.dev go"; \
+	@MISE_BIN="$$(command -v mise || echo $(HOME)/.local/bin/mise)"; \
+	if [ ! -x "$$MISE_BIN" ]; then \
+		echo "mise is required. Install via: make -f Makefile.dev mise"; \
 		exit 1; \
-	fi
+	fi; \
+	export GOPATH="$(HOME)/.local/gopath"; \
+	"$$MISE_BIN" x go@$(GO_VER) -- go install github.com/charmbracelet/glow@latest; \
+	ln -sf $$GOPATH/bin/glow $(BIN_DIR)/glow
 # --- Uninstall Targets ---
 
 uninstall-advanced:
 	@echo "==> Uninstalling advanced tools..."
+	@MISE_BIN="$$(command -v mise || echo $(HOME)/.local/bin/mise)"; \
+	if [ -x "$$MISE_BIN" ]; then \
+		"$$MISE_BIN" x rust@stable -- sh -lc 'cargo uninstall television 2>/dev/null || true; cargo uninstall broot 2>/dev/null || true; cargo uninstall tabiew 2>/dev/null || true'; \
+	fi
 	@rm -f $(BIN_DIR)/sshm
 	@rm -f $(BIN_DIR)/tv
-	@if command -v cargo >/dev/null 2>&1; then \
-		cargo uninstall television 2>/dev/null || true; \
-	fi
 	@rm -f $(BIN_DIR)/br
-	@if command -v cargo >/dev/null 2>&1; then \
-		cargo uninstall broot 2>/dev/null || true; \
-	fi
 	@rm -f $(BIN_DIR)/tw
-	@if command -v cargo >/dev/null 2>&1; then \
-		cargo uninstall tabiew 2>/dev/null || true; \
-	fi
 	@rm -f $(BIN_DIR)/glow
 	@echo "Advanced tools uninstalled."

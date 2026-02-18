@@ -1,0 +1,5 @@
+[tools]
+go = "1.26.0"
+rust = "stable"
+python = "3.14"
+uv = "latest"

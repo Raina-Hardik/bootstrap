@@ -47,7 +47,7 @@ install: install-core install-dev install-git
 	@echo ""
 	@echo "Installed:"
 	@echo "  - Core CLI tools (ripgrep, fd, bat, fzf, tmux, etc.)"
-	@echo "  - Development environment (Neovim, Go, Rust, Python tools)"
+	@echo "  - Development environment (Neovim + mise-managed Go/Rust/Python tools)"
 	@echo "  - Git tools (delta, themes, git config)"
 	@echo ""
 	@echo "Next steps:"
@@ -87,9 +87,12 @@ install-ai:
 	@$(MAKE) -f Makefile.ai all
 
 # --- Individual Tool Targets (pass-through) ---
-.PHONY: nvim go rust cargo-tools go-tools uv-tools lazydocker delta git-config bat-config
+.PHONY: mise nvim go rust cargo-tools go-tools uv-tools lazydocker delta git-config bat-config
 .PHONY: sshm television broot tabiew glow opencode crush
 .PHONY: zsh starship nerd-font starship-config zshrc
+
+mise:
+	@$(MAKE) -f Makefile.dev mise
 
 nvim:
 	@$(MAKE) -f Makefile.dev nvim
