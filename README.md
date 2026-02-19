@@ -55,4 +55,4 @@ Run `make help` or `just help` for all available targets.
 
 Linux x86_64 and ARM64. Tested on Ubuntu, RHEL, Manjaro, Arch(Omarchy, Arch, Archcraft) should work on any glibc-based distro.
 
-Not for macOS or systems requiring sudo.
+No promises for macOS or systems requiring sudo.
