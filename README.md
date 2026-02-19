@@ -1,21 +1,10 @@
-# Basic SSH Config
+# basic-ssh-config
 
-Personal environment setup for remote Linux servers and containers.
+Fast, repeatable development environment setup for Linux servers, containers, and remote systems.
 
-## Purpose
+## Core Principle
 
-This repository contains a minimal configuration set for quickly setting up consistent development environments across various remote systems including:
-
-- Company servers
-- AWS EC2 instances
-- Home lab machines
-- Private network hosts
-- Docker containers
-
-## Contents
-
-- **Makefile** - Idempotent installation of core tools and Neovim with LazyVim
-- **.bashrc** - Shell environment configuration with history, prompt, and aliases
+✅ **No sudo required.** All tools install to user-local directories using [mise](https://mise.jdx.dev).
 
 ## Quick Start
 
@@ -26,73 +15,44 @@ make install
 source ~/.bashrc
 ```
 
-## Non-Root User Support
-
-✅ **Fully compatible with non-root users!** Tools are installed and managed by `mise` in user-local directories (`~/.local/share/mise`, `~/.local/bin`) without requiring sudo.
-
-**Docker Example:**
-
-```dockerfile
-# Create and use non-root user
-RUN useradd -m -s /bin/bash devuser
-USER devuser
-
-# Installation works without sudo
-WORKDIR /home/devuser
-RUN git clone https://github.com/Raina-Hardik/basic-ssh-config.git && \
-    cd basic-ssh-config && \
-    make install
-```
-
-This makes the setup ideal for:
-
-- Containerized environments
-- Remote systems with limited privileges
-- Shared multi-user systems
-- CI/CD pipelines
-
-## Installation Targets
+Or with justfile:
 
 ```bash
-make install      # Full installation (core + dev + git)
-make install-all  # Install everything including advanced tools
-make tools        # Core CLI tools via mise
-make mise         # Install mise and all tools in .mise.toml
-make nvim         # Neovim via mise + LazyVim config
-make go           # Go runtime via mise
-make rust         # Rust toolchain via mise
-make uv-tools     # Python tooling via mise/uv
-make lazydocker   # lazydocker via mise
+just install
+source ~/.bashrc
 ```
 
-## Tools Installed
+## What Gets Installed
 
-### CLI Utilities
+| Category | Tools |
+|----------|-------|
+| **CLI Tools** | ripgrep, fd, bat, duf, just, zoxide, eza, git-delta, btop, television, diskonaut |
+| **Languages** | node, go, rust (via mise) |
+| **Extras** | fzf, opencode |
+| **Development** | Neovim (AstroNvim), uv (Python), cargo, go install tools, git configuration |
+| **Optional** | starship, zsh (manual targets) |
 
-- **ripgrep** (`rg`) - Fast grep alternative
-- **fd** - Fast find alternative
-- **bat** - Cat with syntax highlighting
-- **fzf** - Fuzzy finder
-- **duf** - Disk usage utility
-- **direnv** - Environment variable manager
-- **just** - Command runner
-- **dotbot** - Dotfile manager (YAML-driven)
+Run `make help` or `just help` for all available targets.
 
-### Development Tools
+## Why This Works
 
-- **Neovim** (v0.11.5) with LazyVim configuration
-- **mise** - Runtime/version manager for language toolchains
-- **Go** (v1.26.0) - Managed via `mise`
-- **Rust** - Managed via `mise`
-- **Python + uv** - Managed via `mise` for language tooling installs
-- **lazydocker** - Lazy Docker UI managed by `mise`
-  - ruff (linter/formatter)
-  - pyright (type checker)
-  - debugpy (debugger)
-  - black (formatter)
+- **mise manages runtimes** — no manual PATH plumbing, explicit version control
+- **Language-native package managers** — cargo, uv, go install handle their own caching
+- **Idempotent** — safe to run multiple times
+- **Shell-agnostic** — detects and configures bash, zsh, or fish
+- **Docker-friendly** — works as non-root user
+- **No system dependencies** — AppImage for Neovim, user-space installs only
 
-All tools are installed to user-local `mise` directories without requiring sudo access.
+## Files
 
-## Architecture Support
+- `Makefile` — Installation orchestration (bash/make)
+- `justfile` — Alternative task runner (bash/just)
+- `.bashrc` — Shell environment
+- `.zshrc` — Zsh configuration
+- `deprecated/` — Archived old Makefiles for reference
 
-Automatically detects and installs x86_64 or ARM64 binaries as appropriate.
+## Supported Platforms
+
+Linux x86_64 and ARM64. Tested on Ubuntu, RHEL, Manjaro, Arch(Omarchy, Arch, Archcraft) should work on any glibc-based distro.
+
+Not for macOS or systems requiring sudo.

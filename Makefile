@@ -123,6 +123,7 @@ install-rust-tools:
 	$(MISE_BIN) exec -- cargo install zoxide
 	$(MISE_BIN) exec -- cargo install git-delta
 	$(MISE_BIN) exec -- cargo install btop
+	$(MISE_BIN) exec -- cargo install eza
 	$(MISE_BIN) exec -- cargo install television
 	$(MISE_BIN) exec -- cargo install diskonaut
 	$(MISE_BIN) exec -- cargo install --locked serie

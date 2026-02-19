@@ -9,6 +9,12 @@ export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 export TERM=xterm-256color
 
+# Ensure .local/bin is in PATH
+case ":$PATH:" in
+  *":$HOME/.local/bin:"*) ;;
+  *) export PATH="$HOME/.local/bin:$PATH" ;;
+esac
+
 # mise runtime manager (Go/Rust/Python/uv)
 if [ -x "$HOME/.local/bin/mise" ]; then
   eval "$("$HOME/.local/bin/mise" activate zsh)"
@@ -108,9 +114,18 @@ zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"   # Colored completion
 #  Aliases
 # ============================================================================
 
-alias ls='ls --color=auto'
-alias ll='ls -lah'
-alias la='ls -A'
+# Modern replacements
+if command -v eza >/dev/null; then
+  alias ls='eza --icons=auto'
+  alias ll='eza --icons=auto -lah'
+  alias la='eza --icons=auto -a'
+  alias tree='eza --tree --level=2'
+else
+  alias ls='ls --color=auto'
+  alias ll='ls -lah'
+  alias la='ls -A'
+fi
+
 alias grep='grep --color=auto'
 alias cat='bat --paging=never --style=plain'
 alias df='duf 2>/dev/null || df -h'
@@ -122,9 +137,9 @@ alias mv='mv -i'
 
 alias cls='clear && ls'
 
-alias v='nvim'
-alias vi='nvim'
-alias vim='nvim'
+# Editor aliases (nvim first, fallback to vim)
+alias v='command -v nvim >/dev/null && nvim || vim'
+alias vi='command -v nvim >/dev/null && nvim || vim'
 
 # System monitoring
 if command -v btop >/dev/null; then
@@ -161,6 +176,17 @@ export PYTHONUNBUFFERED=1
 
 if command -v direnv >/dev/null; then
   eval "$(direnv hook zsh)"
+fi
+
+# ============================================================================
+#  HPC / Module system (if available)
+# ============================================================================
+
+if command -v module >/dev/null; then
+  # Add custom module loads here:
+  # module load cuda/12.2
+  # module load gcc/11
+  :
 fi
 
 # ============================================================================
@@ -206,12 +232,9 @@ export TMOUT=0
 # ============================================================================
 
 # FZF keybindings and completion
-if [ -f "$HOME/.local/fzf/shell/key-bindings.zsh" ]; then
-  source "$HOME/.local/fzf/shell/key-bindings.zsh"
-fi
-
-if [ -f "$HOME/.local/fzf/shell/completion.zsh" ]; then
-  source "$HOME/.local/fzf/shell/completion.zsh"
+if command -v fzf >/dev/null && [ -d "${FZF_BASE:=$HOME/.local/fzf}" ]; then
+  [ -f "${FZF_BASE}/shell/key-bindings.zsh" ] && source "${FZF_BASE}/shell/key-bindings.zsh"
+  [ -f "${FZF_BASE}/shell/completion.zsh" ] && source "${FZF_BASE}/shell/completion.zsh"
 fi
 
 # Zoxide (smart cd)
@@ -242,8 +265,4 @@ extract () {
   esac
 }
 
-# ============================================================================
-#  Session info (interactive only)
-# ============================================================================
 
-echo "Ready | $(hostname) | $(date '+%Y-%m-%d %H:%M')"

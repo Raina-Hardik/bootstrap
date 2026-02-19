@@ -8,6 +8,12 @@ export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 export TERM=xterm-256color
 
+# Ensure .local/bin is in PATH
+case ":$PATH:" in
+  *":$HOME/.local/bin:"*) ;;
+  *) export PATH="$HOME/.local/bin:$PATH" ;;
+esac
+
 # mise runtime manager (Go/Rust/Python/uv)
 if [ -x "$HOME/.local/bin/mise" ]; then
   eval "$("$HOME/.local/bin/mise" activate bash)"
@@ -71,9 +77,18 @@ PS1="${__c_user}\u${__c_reset}@${__c_host}\h${__c_reset}:${__c_path}\w${__c_git}
 #  Aliases
 # ============================================================================
 
-alias ls='ls --color=auto'
-alias ll='ls -lah'
-alias la='ls -A'
+# Modern replacements
+if command -v eza >/dev/null; then
+  alias ls='eza --icons=auto'
+  alias ll='eza --icons=auto -lah'
+  alias la='eza --icons=auto -a'
+  alias tree='eza --tree --level=2'
+else
+  alias ls='ls --color=auto'
+  alias ll='ls -lah'
+  alias la='ls -A'
+fi
+
 alias grep='grep --color=auto'
 alias cat='bat --paging=never --style=plain'
 alias df='duf 2>/dev/null || df -h'
@@ -85,9 +100,9 @@ alias mv='mv -i'
 
 alias cls='clear && ls'
 
-alias v='nvim'
-alias vi='nvim'
-alias vim='nvim'
+# Editor aliases (nvim first, fallback to vim)
+alias v='command -v nvim >/dev/null && nvim || vim'
+alias vi='command -v nvim >/dev/null && nvim || vim'
 
 # System monitoring
 if command -v btop >/dev/null; then
@@ -127,13 +142,13 @@ if command -v direnv >/dev/null; then
 fi
 
 # ============================================================================
-#  HPC / Module system (INTENTIONALLY EMPTY)
-#  Add things like:
-#     module load cuda/12.2
-#     module load gcc/11
+#  HPC / Module system (if available)
 # ============================================================================
 
 if command -v module >/dev/null; then
+  # Add custom module loads here:
+  # module load cuda/12.2
+  # module load gcc/11
   :
 fi
 
@@ -146,8 +161,6 @@ bind 'set show-all-if-ambiguous on'
 bind 'TAB:menu-complete'
 
 export TMOUT=0
-
-# ============================================================================
 #  Tool integrations (lazy-loaded)
 # ============================================================================
 
