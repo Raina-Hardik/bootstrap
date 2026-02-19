@@ -24,13 +24,13 @@ source ~/.bashrc
 
 ## What Gets Installed
 
-| Category | Tools |
-|----------|-------|
-| **CLI Tools** | ripgrep, fd, bat, duf, just, zoxide, eza, git-delta, btop, television, diskonaut |
-| **Languages** | node, go, rust (via mise) |
-| **Extras** | fzf, opencode |
-| **Development** | Neovim (AstroNvim), uv (Python), cargo, go install tools, git configuration |
-| **Optional** | starship, zsh (manual targets) |
+| Category        | Tools                                                                            |
+| --------------- | -------------------------------------------------------------------------------- |
+| **CLI Tools**   | ripgrep, fd, bat, duf, just, zoxide, eza, git-delta, btop, television, diskonaut |
+| **Languages**   | node, go, rust (via mise)                                                        |
+| **Extras**      | fzf, opencode                                                                    |
+| **Development** | Neovim (AstroNvim), uv (Python), cargo, go install tools, git configuration      |
+| **Optional**    | starship, zsh (manual targets)                                                   |
 
 📖 **See [TOOLS.md](TOOLS.md)** for detailed tool descriptions, usage examples, alternatives, and uninstall instructions.
 

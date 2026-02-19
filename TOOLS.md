@@ -52,6 +52,7 @@ These are simple command replacements that enhance the daily terminal experience
 **Replaces**: `cd` (but cd still works)
 
 **Example**:
+
 ```bash
 z documents  # Jump to ~/Documents or any frequently visited dir matching "documents"
 z ..         # Go up one directory
@@ -68,6 +69,7 @@ z ..         # Go up one directory
 **Replaces**: `ls` (aliased in shell configs)
 
 **Example**:
+
 ```bash
 eza           # Colorful directory listing
 eza -la       # Long format with hidden files
@@ -85,6 +87,7 @@ eza --tree    # Tree view
 **Replaces**: `find` (but find still works)
 
 **Example**:
+
 ```bash
 fd pattern           # Find files matching "pattern"
 fd -e js             # Find all .js files
@@ -102,6 +105,7 @@ fd -H config         # Include hidden files
 **Replaces**: `grep -r` (but grep still works)
 
 **Example**:
+
 ```bash
 rg "TODO"            # Find TODO in all files
 rg -t rust "fn "     # Search only Rust files
@@ -119,6 +123,7 @@ rg -i case           # Case-insensitive search
 **Replaces**: `cat` (but cat still works)
 
 **Example**:
+
 ```bash
 bat file.py          # View with syntax highlighting
 bat -n file.sh       # Show line numbers
@@ -135,6 +140,7 @@ bat -n file.sh       # Show line numbers
 **Replaces**: `df -h` (but df still works)
 
 **Example**:
+
 ```bash
 duf                  # Show all mounted filesystems
 duf /home            # Show specific path usage
@@ -155,6 +161,7 @@ These tools require some learning but dramatically improve development workflows
 **Replaces**: `top`, `htop`
 
 **Example**:
+
 ```bash
 btop                 # Launch interactive dashboard
 ```
@@ -172,6 +179,7 @@ btop                 # Launch interactive dashboard
 **Replaces**: Default git diff output (configured in .gitconfig)
 
 **Example**:
+
 ```bash
 git diff             # Shows delta output automatically
 git log -p           # Pretty commit history
@@ -188,6 +196,7 @@ git log -p           # Pretty commit history
 **Replaces**: `docker ps`, `docker logs`, `docker exec` (but commands still work)
 
 **Example**:
+
 ```bash
 lazydocker           # Launch interactive dashboard
 ```
@@ -205,6 +214,7 @@ lazydocker           # Launch interactive dashboard
 **Replaces**: `make <target>` (but make still works)
 
 **Example**:
+
 ```bash
 lazymake             # Launch interactive target selector
 ```
@@ -222,6 +232,7 @@ lazymake             # Launch interactive target selector
 **Replaces**: `make` for task running (both coexist)
 
 **Example**:
+
 ```bash
 just install         # Run install recipe
 just --list          # Show all recipes
@@ -240,6 +251,7 @@ just --list          # Show all recipes
 **Replaces**: `fzf` workflows
 
 **Example**:
+
 ```bash
 tv                   # Launch fuzzy finder
 ```
@@ -255,6 +267,7 @@ tv                   # Launch fuzzy finder
 **Replaces**: `du -sh *` (but du still works)
 
 **Example**:
+
 ```bash
 diskonaut            # Launch in current directory
 diskonaut /var       # Analyze specific path
@@ -271,6 +284,7 @@ diskonaut /var       # Analyze specific path
 **Replaces**: `git log --graph`
 
 **Example**:
+
 ```bash
 serie                # Show commit graph
 ```
@@ -284,46 +298,60 @@ serie                # Show commit graph
 ### Python Tools (installed via uv)
 
 #### ruff
+
 Fast Python linter and formatter (replaces flake8, black, isort).
+
 ```bash
 ruff check .         # Lint code
 ruff format .        # Format code
 ```
 
 #### black
+
 Opinionated Python formatter (if you prefer it over ruff format).
+
 ```bash
 black .              # Format all Python files
 ```
 
 #### pyright
+
 Static type checker for Python (faster alternative to mypy).
+
 ```bash
 pyright              # Type check current directory
 ```
 
 #### pre-commit
+
 Git hook framework for automated checks before commits.
+
 ```bash
 pre-commit install   # Set up hooks
 pre-commit run --all-files
 ```
 
 #### httpie
+
 User-friendly HTTP client (better than curl for APIs).
+
 ```bash
 http GET httpbin.org/get
 http POST httpbin.org/post name=value
 ```
 
 #### posting
+
 Modern API client in the terminal (postman alternative).
+
 ```bash
 posting              # Launch TUI
 ```
 
 #### dotbot
+
 Declarative dotfile management (for symlinking configs).
+
 ```bash
 dotbot -c install.conf.yaml
 ```
@@ -333,34 +361,44 @@ dotbot -c install.conf.yaml
 ### Go Tools
 
 #### yq
+
 YAML/JSON/XML processor (like jq but for multiple formats).
+
 ```bash
 yq '.key' file.yaml  # Query YAML
 yq -o json file.yaml # Convert to JSON
 ```
 
 #### glow
+
 Markdown renderer for terminal - beautifully format README files.
+
 ```bash
 glow README.md       # Render markdown
 glow -p README.md    # Page mode
 ```
 
 #### sshm
+
 SSH connection manager - organize and quickly connect to servers.
+
 ```bash
 sshm list            # Show saved connections
 sshm connect prod    # Connect to saved host
 ```
 
 #### nap
+
 Code snippet manager in terminal.
+
 ```bash
 nap                  # Launch TUI
 ```
 
 #### deletor
+
 Safe file deletion with trash functionality.
+
 ```bash
 deletor file.txt     # Move to trash instead of rm
 ```
@@ -441,6 +479,7 @@ source ~/.bashrc  # or source ~/.zshrc
 #### Remove Language-Specific Tools
 
 **Rust tools (cargo packages)**:
+
 ```bash
 # List installed packages
 cargo install --list
@@ -462,6 +501,7 @@ cargo uninstall starship  # if installed
 ```
 
 **Python tools (uv)**:
+
 ```bash
 # List installed tools
 uv tool list
@@ -477,6 +517,7 @@ uv tool uninstall posting
 ```
 
 **Go tools**:
+
 ```bash
 # Go doesn't have a built-in uninstall, just remove binaries
 rm ~/go/bin/lazymake
