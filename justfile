@@ -1,9 +1,9 @@
 set shell := ["bash", "-cu"]
 
 # Directory variables
-LOCAL_BIN := env_var_or_default("HOME", "") / ".local/bin"
+LOCAL_BIN := env("HOME", "") / ".local/bin"
 MISE_BIN := LOCAL_BIN / "mise"
-HOME_DIR := env_var_or_default("HOME", "")
+HOME_DIR := env("HOME", "")
 
 # Detect shell
 USER_SHELL := `basename "$SHELL"`
