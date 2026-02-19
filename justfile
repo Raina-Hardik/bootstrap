@@ -12,23 +12,6 @@ USER_SHELL := `basename "$SHELL"`
 ARCH := `uname -m`
 FASTFETCH_ARCH := if ARCH == "aarch64" { "aarch64" } else { "amd64" }
 
-# Determine RC file and activation line based on shell
-RC_FILE := if USER_SHELL == "zsh" {
-    HOME_DIR / ".zshrc"
-} else if USER_SHELL == "fish" {
-    HOME_DIR / ".config/fish/config.fish"
-} else {
-    HOME_DIR / ".bashrc"
-}
-
-MISE_ACTIVATE_LINE := if USER_SHELL == "zsh" {
-    "eval \"$({{MISE_BIN}} activate zsh)\""
-} else if USER_SHELL == "fish" {
-    "{{MISE_BIN}} activate fish | source"
-} else {
-    "eval \"$({{MISE_BIN}} activate bash)\""
-}
-
 # -------------------------------------------------------------------
 # Help
 # -------------------------------------------------------------------
@@ -91,11 +74,13 @@ MISE_ACTIVATE_LINE := if USER_SHELL == "zsh" {
 # -------------------------------------------------------------------
 
 @setup-shell:
-    echo ">> Ensuring shell config exists at {{RC_FILE}}"
-    mkdir -p $(dirname {{RC_FILE}})
-    [ -f {{RC_FILE}} ] || touch {{RC_FILE}}
-    echo ">> Ensuring mise activation in {{RC_FILE}} for {{USER_SHELL}}"
-    grep -qxF '{{MISE_ACTIVATE_LINE}}' {{RC_FILE}} || echo '{{MISE_ACTIVATE_LINE}}' >> {{RC_FILE}}
+    echo ">> Installing complete .bashrc configuration"
+    if [ -f {{HOME_DIR}}/.bashrc ]; then \
+        mv {{HOME_DIR}}/.bashrc {{HOME_DIR}}/.bashrc.bak; \
+        echo ">> Backed up existing .bashrc to .bashrc.bak"; \
+    fi
+    cp .bashrc {{HOME_DIR}}/.bashrc
+    echo ">> Installed complete .bashrc to {{HOME_DIR}}/.bashrc"
 
 # -------------------------------------------------------------------
 # Install languages globally via mise
@@ -165,7 +150,15 @@ MISE_ACTIVATE_LINE := if USER_SHELL == "zsh" {
 @install-starship:
     {{MISE_BIN}} exec -- cargo install starship
     mkdir -p {{HOME_DIR}}/.config
-    echo ">> Starship installed. Configure at {{HOME_DIR}}/.config/starship.toml"
+    echo ">> Starship installed. Adding init to shell config"
+    if [ "{{USER_SHELL}}" = "zsh" ]; then \
+        grep -q 'starship init zsh' {{HOME_DIR}}/.zshrc || echo 'eval "$(starship init zsh)"' >> {{HOME_DIR}}/.zshrc; \
+    elif [ "{{USER_SHELL}}" = "fish" ]; then \
+        grep -q 'starship init fish' {{HOME_DIR}}/.config/fish/config.fish || echo 'starship init fish | source' >> {{HOME_DIR}}/.config/fish/config.fish; \
+    else \
+        grep -q 'starship init bash' {{HOME_DIR}}/.bashrc || echo 'eval "$(starship init bash)"' >> {{HOME_DIR}}/.bashrc; \
+    fi
+    echo ">> Starship configured. Restart shell or source your RC file"
 
 # -------------------------------------------------------------------
 # Zsh installation
@@ -177,8 +170,13 @@ MISE_ACTIVATE_LINE := if USER_SHELL == "zsh" {
     else \
         echo ">> Warning: Zsh not found. Install via your system package manager."; \
     fi
+    echo ">> Installing complete .zshrc configuration"
+    if [ -f {{HOME_DIR}}/.zshrc ]; then \
+        mv {{HOME_DIR}}/.zshrc {{HOME_DIR}}/.zshrc.bak; \
+        echo ">> Backed up existing .zshrc to .zshrc.bak"; \
+    fi
     cp .zshrc {{HOME_DIR}}/.zshrc
-    echo ">> .zshrc installed at {{HOME_DIR}}/.zshrc"
+    echo ">> Installed complete .zshrc to {{HOME_DIR}}/.zshrc"
 
 # -------------------------------------------------------------------
 # Fastfetch installation (optional)

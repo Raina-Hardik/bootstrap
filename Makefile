@@ -92,11 +92,13 @@ install-mise:
 # -------------------------------------------------------------------
 
 setup-shell:
-	@echo ">> Ensuring shell config exists at $(RC_FILE)"
-	@mkdir -p $(dir $(RC_FILE))
-	@if [ ! -f $(RC_FILE) ]; then touch $(RC_FILE); fi
-	@echo ">> Ensuring mise activation in $(RC_FILE) for $(USER_SHELL)"
-	@grep -qxF '$(MISE_ACTIVATE_LINE)' $(RC_FILE) || echo '$(MISE_ACTIVATE_LINE)' >> $(RC_FILE)
+	@echo ">> Installing complete .bashrc configuration"
+	@if [ -f $(HOME)/.bashrc ]; then \
+		mv $(HOME)/.bashrc $(HOME)/.bashrc.bak; \
+		echo ">> Backed up existing .bashrc to .bashrc.bak"; \
+	fi
+	@cp .bashrc $(HOME)/.bashrc
+	@echo ">> Installed complete .bashrc to $(HOME)/.bashrc"
 
 # -------------------------------------------------------------------
 # Install languages globally via mise
@@ -166,7 +168,15 @@ install-go-tools:
 install-starship:
 	$(MISE_BIN) exec -- cargo install starship
 	@mkdir -p $(HOME)/.config
-	@echo ">> Starship installed. Configure at $(HOME)/.config/starship.toml"
+	@echo ">> Starship installed. Adding init to $(RC_FILE)"
+	@if [ "$(USER_SHELL)" = "zsh" ]; then \
+		grep -q 'starship init zsh' $(RC_FILE) || echo 'eval "$$(starship init zsh)"' >> $(RC_FILE); \
+	elif [ "$(USER_SHELL)" = "fish" ]; then \
+		grep -q 'starship init fish' $(RC_FILE) || echo 'starship init fish | source' >> $(RC_FILE); \
+	else \
+		grep -q 'starship init bash' $(RC_FILE) || echo 'eval "$$(starship init bash)"' >> $(RC_FILE); \
+	fi
+	@echo ">> Starship configured. Restart shell or run: source $(RC_FILE)"
 
 # -------------------------------------------------------------------
 # Zsh installation
@@ -178,8 +188,13 @@ install-zsh:
 	else \
 		echo ">> Warning: Zsh not found. Install via your system package manager."; \
 	fi
+	@echo ">> Installing complete .zshrc configuration"
+	@if [ -f $(HOME)/.zshrc ]; then \
+		mv $(HOME)/.zshrc $(HOME)/.zshrc.bak; \
+		echo ">> Backed up existing .zshrc to .zshrc.bak"; \
+	fi
 	@cp .zshrc $(HOME)/.zshrc
-	@echo ">> .zshrc installed at $(HOME)/.zshrc"
+	@echo ">> Installed complete .zshrc to $(HOME)/.zshrc"
 
 # -------------------------------------------------------------------
 # Fastfetch installation (optional)
