@@ -32,6 +32,8 @@ source ~/.bashrc
 | **Development** | Neovim (AstroNvim), uv (Python), cargo, go install tools, git configuration |
 | **Optional** | starship, zsh (manual targets) |
 
+📖 **See [TOOLS.md](TOOLS.md)** for detailed tool descriptions, usage examples, alternatives, and uninstall instructions.
+
 Run `make help` or `just help` for all available targets.
 
 ## Why This Works
