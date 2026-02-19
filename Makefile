@@ -1,5 +1,5 @@
 LOCAL_BIN := $(HOME)/.local/bin
-MISE_BIN := $(LOCAL_BIN)/mise
+MISE_BIN := $(shell command -v mise 2>/dev/null || echo $(LOCAL_BIN)/mise)
 USER_SHELL := $(shell basename "$$SHELL")
 
 # Architecture detection
@@ -73,10 +73,14 @@ install:
 # -------------------------------------------------------------------
 
 install-nvim:
-	mkdir -p $(LOCAL_BIN)
-	curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.appimage
-	chmod u+x nvim-linux-x86_64.appimage
-	mv -f nvim-linux-x86_64.appimage $(LOCAL_BIN)/nvim
+	@if command -v nvim >/dev/null 2>&1; then \
+		echo ">> nvim already installed: $$(nvim --version | head -n 1)"; \
+	else \
+		mkdir -p $(LOCAL_BIN); \
+		curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.appimage; \
+		chmod u+x nvim-linux-x86_64.appimage; \
+		mv -f nvim-linux-x86_64.appimage $(LOCAL_BIN)/nvim; \
+	fi
 	@if [ -d ~/.config/nvim ]; then mv ~/.config/nvim ~/.config/nvim.bak; fi
 	@if [ -d ~/.local/share/nvim ]; then mv ~/.local/share/nvim ~/.local/share/nvim.bak; fi
 	@if [ -d ~/.local/state/nvim ]; then mv ~/.local/state/nvim ~/.local/state/nvim.bak; fi
@@ -85,7 +89,11 @@ install-nvim:
 	rm -rf ~/.config/nvim/.git
 
 install-mise:
-	curl https://mise.run | sh
+	@if command -v mise >/dev/null 2>&1; then \
+		echo ">> mise already installed: $$(mise --version)"; \
+	else \
+		curl https://mise.run | sh; \
+	fi
 
 # -------------------------------------------------------------------
 # Shell setup

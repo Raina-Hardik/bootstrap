@@ -2,7 +2,7 @@ set shell := ["bash", "-cu"]
 
 # Directory variables
 LOCAL_BIN := env("HOME", "") / ".local/bin"
-MISE_BIN := LOCAL_BIN / "mise"
+MISE_BIN := `command -v mise >/dev/null 2>&1 && command -v mise || echo "$HOME/.local/bin/mise"`
 HOME_DIR := env("HOME", "")
 
 # Detect shell
@@ -55,10 +55,14 @@ FASTFETCH_ARCH := if ARCH == "aarch64" { "aarch64" } else { "amd64" }
 # -------------------------------------------------------------------
 
 @install-nvim:
-    mkdir -p {{LOCAL_BIN}}
-    curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.appimage
-    chmod u+x nvim-linux-x86_64.appimage
-    mv -f nvim-linux-x86_64.appimage {{LOCAL_BIN}}/nvim
+    if command -v nvim >/dev/null 2>&1; then \
+        echo ">> nvim already installed: $(nvim --version | head -n 1)"; \
+    else \
+        mkdir -p {{LOCAL_BIN}}; \
+        curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.appimage; \
+        chmod u+x nvim-linux-x86_64.appimage; \
+        mv -f nvim-linux-x86_64.appimage {{LOCAL_BIN}}/nvim; \
+    fi
     [ -d ~/.config/nvim ] && mv ~/.config/nvim ~/.config/nvim.bak || true
     [ -d ~/.local/share/nvim ] && mv ~/.local/share/nvim ~/.local/share/nvim.bak || true
     [ -d ~/.local/state/nvim ] && mv ~/.local/state/nvim ~/.local/state/nvim.bak || true
@@ -67,7 +71,11 @@ FASTFETCH_ARCH := if ARCH == "aarch64" { "aarch64" } else { "amd64" }
     rm -rf ~/.config/nvim/.git
 
 @install-mise:
-    curl https://mise.run | sh
+    if command -v mise >/dev/null 2>&1; then \
+        echo ">> mise already installed: $(mise --version)"; \
+    else \
+        curl https://mise.run | sh; \
+    fi
 
 # -------------------------------------------------------------------
 # Shell setup
