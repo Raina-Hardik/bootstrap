@@ -2,6 +2,10 @@ LOCAL_BIN := $(HOME)/.local/bin
 MISE_BIN := $(LOCAL_BIN)/mise
 USER_SHELL := $(shell basename "$$SHELL")
 
+# Architecture detection
+ARCH := $(shell uname -m)
+FASTFETCH_ARCH := $(if $(filter aarch64,$(ARCH)),aarch64,amd64)
+
 ifeq ($(USER_SHELL),zsh)
 RC_FILE := $(HOME)/.zshrc
 MISE_ACTIVATE_LINE := eval "$$($(MISE_BIN) activate zsh)"
@@ -30,6 +34,7 @@ help:
 	@echo "Optional shell setup (manual):"
 	@echo "  make install-zsh   - Install and configure zsh"
 	@echo "  make install-starship - Install starship prompt via cargo"
+	@echo "  make install-fastfetch - Install fastfetch system info tool"
 	@echo ""
 	@echo "Individual tools (usually run via 'make install'):"
 	@echo "  make install-nvim  - Install Neovim with AstroNvim"
@@ -46,7 +51,7 @@ help:
 	install-nvim install-mise setup-shell \
 	mise-languages mise-languages-extras \
 	install-rust-tools install-python-tools install-go-tools \
-	install-starship install-zsh \
+	install-starship install-zsh install-fastfetch \
 	install-just
 
 # -------------------------------------------------------------------
@@ -175,6 +180,24 @@ install-zsh:
 	fi
 	@cp .zshrc $(HOME)/.zshrc
 	@echo ">> .zshrc installed at $(HOME)/.zshrc"
+
+# -------------------------------------------------------------------
+# Fastfetch installation (optional)
+# -------------------------------------------------------------------
+
+install-fastfetch:
+	@if command -v fastfetch >/dev/null 2>&1; then \
+		echo ">> fastfetch already installed"; \
+	else \
+		echo ">> Installing fastfetch for $(ARCH)..."; \
+		mkdir -p /tmp/fastfetch-install; \
+		curl -L -o /tmp/fastfetch-install/fastfetch.tar.gz https://github.com/fastfetch-cli/fastfetch/releases/download/2.59.0/fastfetch-linux-$(FASTFETCH_ARCH).tar.gz; \
+		tar -xzf /tmp/fastfetch-install/fastfetch.tar.gz -C /tmp/fastfetch-install; \
+		mkdir -p $(LOCAL_BIN); \
+		cp /tmp/fastfetch-install/usr/bin/fastfetch $(LOCAL_BIN)/; \
+		rm -rf /tmp/fastfetch-install; \
+		echo ">> fastfetch installed to $(LOCAL_BIN)/fastfetch"; \
+	fi
 
 # -------------------------------------------------------------------
 # Aggregate tool install

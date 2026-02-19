@@ -1,5 +1,3 @@
-#!/usr/bin/env just --justfile
-
 set shell := ["bash", "-cu"]
 
 # Directory variables
@@ -9,6 +7,10 @@ HOME_DIR := env_var_or_default("HOME", "")
 
 # Detect shell
 USER_SHELL := `basename "$SHELL"`
+
+# Architecture detection
+ARCH := `uname -m`
+FASTFETCH_ARCH := if ARCH == "aarch64" { "aarch64" } else { "amd64" }
 
 # Determine RC file and activation line based on shell
 RC_FILE := if USER_SHELL == "zsh" {
@@ -45,6 +47,7 @@ MISE_ACTIVATE_LINE := if USER_SHELL == "zsh" {
     echo "Optional shell setup (manual):"
     echo "  just install-zsh   - Install and configure zsh"
     echo "  just install-starship - Install starship prompt via cargo"
+    echo "  just install-fastfetch - Install fastfetch system info tool"
     echo ""
     echo "Individual tools (usually run via 'just install'):"
     echo "  just install-nvim  - Install Neovim with AstroNvim"
@@ -176,6 +179,24 @@ MISE_ACTIVATE_LINE := if USER_SHELL == "zsh" {
     fi
     cp .zshrc {{HOME_DIR}}/.zshrc
     echo ">> .zshrc installed at {{HOME_DIR}}/.zshrc"
+
+# -------------------------------------------------------------------
+# Fastfetch installation (optional)
+# -------------------------------------------------------------------
+
+@install-fastfetch:
+    if command -v fastfetch >/dev/null 2>&1; then \
+        echo ">> fastfetch already installed"; \
+    else \
+        echo ">> Installing fastfetch for {{ARCH}}..."; \
+        mkdir -p /tmp/fastfetch-install; \
+        curl -L -o /tmp/fastfetch-install/fastfetch.tar.gz https://github.com/fastfetch-cli/fastfetch/releases/download/2.59.0/fastfetch-linux-{{FASTFETCH_ARCH}}.tar.gz; \
+        tar -xzf /tmp/fastfetch-install/fastfetch.tar.gz -C /tmp/fastfetch-install; \
+        mkdir -p {{LOCAL_BIN}}; \
+        cp /tmp/fastfetch-install/usr/bin/fastfetch {{LOCAL_BIN}}/; \
+        rm -rf /tmp/fastfetch-install; \
+        echo ">> fastfetch installed to {{LOCAL_BIN}}/fastfetch"; \
+    fi
 
 # -------------------------------------------------------------------
 # Aggregate tool install
