@@ -118,11 +118,9 @@ FASTFETCH_ARCH := if ARCH == "aarch64" { "aarch64" } else { "amd64" }
     {{ MISE_BIN }} exec -- cargo install fd-find
     {{ MISE_BIN }} exec -- cargo install ripgrep
     {{ MISE_BIN }} exec -- cargo install bat
-    {{ MISE_BIN }} exec -- cargo install duf
     {{ MISE_BIN }} exec -- cargo install just
     {{ MISE_BIN }} exec -- cargo install zoxide
     {{ MISE_BIN }} exec -- cargo install git-delta
-    {{ MISE_BIN }} exec -- cargo install btop
     {{ MISE_BIN }} exec -- cargo install eza
     {{ MISE_BIN }} exec -- cargo install television
     {{ MISE_BIN }} exec -- cargo install diskonaut
@@ -146,6 +144,8 @@ FASTFETCH_ARCH := if ARCH == "aarch64" { "aarch64" } else { "amd64" }
 # -------------------------------------------------------------------
 
 @install-go-tools:
+    {{ MISE_BIN }} exec -- go install github.com/schollz/croc/v10@latest
+    {{ MISE_BIN }} exec -- go install github.com/muesli/duf@latest
     {{ MISE_BIN }} exec -- go install github.com/rshelekhov/lazymake/cmd/lazymake@latest
     {{ MISE_BIN }} exec -- go install github.com/maaslalani/nap@latest
     {{ MISE_BIN }} exec -- go install github.com/pashkov256/deletor@latest
