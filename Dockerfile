@@ -57,15 +57,15 @@ ENV GITHUB_TOKEN=${GITHUB_TOKEN}
 WORKDIR /home/devuser
 
 # Copy local context (build context) into the container
-COPY --chown=devuser:devuser . /tmp/basic-ssh-config
+COPY --chown=devuser:devuser . /tmp/bootstrap
 
 # Step 1: Install mise and trust .mise.toml
-RUN cd /tmp/basic-ssh-config && \
+RUN cd /tmp/bootstrap && \
     curl https://mise.jdx.dev/install.sh | sh - && \
     /home/devuser/.local/bin/mise trust
 
 # Step 2: Run make install to install all configured tools
-RUN cd /tmp/basic-ssh-config && \
+RUN cd /tmp/bootstrap && \
     make install && \
     echo "✅ Installation completed as non-root user!"
 

@@ -24,7 +24,7 @@ FASTFETCH_ARCH := if ARCH == "aarch64" { "aarch64" } else { "amd64" }
 
 @help:
     echo "====================================================================="
-    echo "  basic-ssh-config - Development Environment Installer"
+    echo "  bootstrap - Development Environment Installer"
     echo "====================================================================="
     echo ""
     echo "Main targets:"
