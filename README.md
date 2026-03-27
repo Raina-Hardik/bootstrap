@@ -1,4 +1,4 @@
-# basic-ssh-config
+# bootstrap
 
 Fast, repeatable development environment setup for Linux servers, containers, and remote systems.
 
@@ -9,8 +9,8 @@ Fast, repeatable development environment setup for Linux servers, containers, an
 ## Quick Start
 
 ```bash
-git clone https://github.com/Raina-Hardik/basic-ssh-config.git
-cd basic-ssh-config
+git clone https://github.com/Raina-Hardik/bootstrap.git
+cd bootstrap
 make install
 source ~/.bashrc
 ```
